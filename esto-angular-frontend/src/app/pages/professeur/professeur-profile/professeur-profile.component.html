@@ -1,0 +1,179 @@
+<div class="p-6 md:p-8 w-full space-y-8">
+  
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="text-xl font-bold text-gray-900 tracking-tight">Mon Profil</h1>
+      <p class="text-gray-500 text-xs mt-1">Gérez vos informations personnelles et paramètres de sécurité.</p>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="flex justify-center py-12">
+    <svg class="animate-spin h-8 w-8 text-esto-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+    </svg>
+  </div>
+
+  <div *ngIf="!isLoading && profileData" class="flex flex-col gap-8">
+    
+    <!-- Global Messages -->
+    <div *ngIf="successMessage" class="bg-green-50 border border-green-200 text-green-800 rounded-xl p-4 flex items-start text-sm">
+      <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+      <span>{{ successMessage }}</span>
+    </div>
+    
+    <div *ngIf="errorMessage" class="bg-red-50 border border-red-200 text-red-800 rounded-xl p-4 flex items-start text-sm">
+      <svg class="w-5 h-5 text-red-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+      <span>{{ errorMessage }}</span>
+    </div>
+
+    <!-- General Info Section -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-6 border-b border-gray-100">
+        
+        <div class="flex items-center gap-4">
+          <img *ngIf="profileData.photo_profil" [src]="getPhotoUrl()" class="w-16 h-16 rounded-xl object-cover border border-esto-primary/20 shadow-sm shrink-0">
+          <div *ngIf="!profileData.photo_profil" class="w-16 h-16 rounded-xl bg-esto-primary/10 text-esto-primary flex items-center justify-center font-black text-2xl shrink-0">
+            {{ profileData.nom?.charAt(0) }}{{ profileData.prenom?.charAt(0) }}
+          </div>
+          <div>
+            <h2 class="text-xl font-bold text-gray-900">Informations Personnelles</h2>
+            <p class="text-sm text-gray-500 mt-1">Consultez et modifiez vos détails personnels.</p>
+          </div>
+        </div>
+        
+        <button *ngIf="!editMode && !passwordMode" (click)="startEdit()" class="text-esto-primary hover:bg-esto-primary/10 px-4 py-2 rounded-xl text-sm font-semibold transition-colors flex items-center shrink-0">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+          Modifier mes informations
+        </button>
+      </div>
+
+      <!-- Read Only View -->
+      <div *ngIf="!editMode" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
+          <span class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Nom Complet</span>
+          <span class="text-base font-medium text-gray-900">{{ profileData.nom }} {{ profileData.prenom }}</span>
+        </div>
+        <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
+          <span class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Adresse Email</span>
+          <span class="text-base font-medium text-gray-900 truncate">{{ profileData.email }}</span>
+        </div>
+        <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 flex flex-col justify-center">
+          <span class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Spécialité</span>
+          <span class="text-base font-medium text-gray-900">{{ profileData.specialite || 'Non renseignée' }}</span>
+        </div>
+        <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 flex flex-col justify-center">
+          <span class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Membre depuis</span>
+          <span class="text-base font-medium text-gray-900">{{ profileData.created_at | date:'longDate' }}</span>
+        </div>
+        <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
+          <span class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Téléphone</span>
+          <span class="text-base font-medium text-gray-900">{{ profileData.telephone || 'Non renseigné' }}</span>
+        </div>
+      </div>
+
+      <!-- Edit View -->
+      <form *ngIf="editMode" (ngSubmit)="saveProfile()" class="space-y-6 animate-fade-in">
+        
+        <div class="mb-6">
+          <label class="block text-sm font-bold text-gray-700 mb-2">Photo de profil</label>
+          <div class="flex items-center gap-4">
+            <img *ngIf="photoPreview" [src]="photoPreview" class="w-16 h-16 rounded-xl object-cover border border-gray-200 shadow-sm shrink-0">
+            <img *ngIf="!photoPreview && profileData.photo_profil" [src]="getPhotoUrl()" class="w-16 h-16 rounded-xl object-cover border border-gray-200 shadow-sm shrink-0">
+            <div *ngIf="!photoPreview && !profileData.photo_profil" class="w-16 h-16 rounded-xl bg-gray-100 flex items-center justify-center text-gray-400 shrink-0">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            </div>
+            <div>
+              <label for="photo-upload" class="cursor-pointer inline-flex items-center px-4 py-2.5 bg-esto-primary/10 text-esto-primary font-semibold text-sm rounded-xl hover:bg-esto-primary/20 transition-colors">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                Modifier photo de profil
+              </label>
+              <input id="photo-upload" type="file" accept="image/*" (change)="onPhotoSelected($event)" class="hidden">
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-2">Nom *</label>
+            <input type="text" [(ngModel)]="editData.nom" name="nom" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-esto-primary/20 focus:border-esto-primary transition-all text-sm">
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-2">Prénom *</label>
+            <input type="text" [(ngModel)]="editData.prenom" name="prenom" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-esto-primary/20 focus:border-esto-primary transition-all text-sm">
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-2">Spécialité</label>
+            <input type="text" [(ngModel)]="editData.specialite" name="specialite" placeholder="Ex: Informatique, Mathématiques..." class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-esto-primary/20 focus:border-esto-primary transition-all text-sm">
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-2">Téléphone</label>
+            <input type="text" [(ngModel)]="editData.telephone" name="telephone" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-esto-primary/20 focus:border-esto-primary transition-all text-sm">
+          </div>
+        </div>
+        <div class="flex items-center gap-3 pt-6 border-t border-gray-100">
+          <button type="submit" [disabled]="isSaving" class="px-6 py-2.5 bg-esto-primary text-white text-sm font-bold rounded-xl hover:bg-opacity-90 transition-colors shadow-sm disabled:opacity-50 flex items-center">
+            <svg *ngIf="isSaving" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            Enregistrer les modifications
+          </button>
+          <button type="button" (click)="cancelEdit()" [disabled]="isSaving" class="px-6 py-2.5 bg-gray-100 text-gray-700 text-sm font-bold rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50">
+            Annuler
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Security Section -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div>
+          <h2 class="text-xl font-bold text-gray-900">Sécurité du Compte</h2>
+          <p class="text-sm text-gray-500 mt-1">Gérez votre mot de passe et l'accès à votre compte.</p>
+        </div>
+        <button *ngIf="!passwordMode && !editMode" (click)="startPassword()" class="text-gray-700 hover:bg-gray-100 px-4 py-2 rounded-xl text-sm font-semibold transition-colors border border-gray-200 flex items-center shrink-0">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+          Changer le mot de passe
+        </button>
+      </div>
+
+      <div *ngIf="!passwordMode" class="flex items-center gap-4 p-5 bg-gray-50 rounded-xl border border-gray-100 max-w-md">
+        <div class="w-12 h-12 rounded-full bg-green-100 text-green-600 flex items-center justify-center shrink-0">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+        </div>
+        <div>
+          <p class="text-base font-bold text-gray-900">Mot de passe sécurisé</p>
+          <p class="text-sm text-gray-500">Votre compte est protégé par un mot de passe.</p>
+        </div>
+      </div>
+
+      <!-- Edit Password View -->
+      <form *ngIf="passwordMode" (ngSubmit)="savePassword()" class="space-y-6 animate-fade-in">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="md:col-span-2 max-w-md">
+            <label class="block text-sm font-bold text-gray-700 mb-2">Mot de passe actuel *</label>
+            <input type="password" [(ngModel)]="passwordData.current_password" name="current_password" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-esto-primary/20 focus:border-esto-primary transition-all text-sm">
+          </div>
+          <div class="max-w-md">
+            <label class="block text-sm font-bold text-gray-700 mb-2">Nouveau mot de passe *</label>
+            <input type="password" [(ngModel)]="passwordData.new_password" name="new_password" required minlength="6" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-esto-primary/20 focus:border-esto-primary transition-all text-sm">
+          </div>
+          <div class="max-w-md">
+            <label class="block text-sm font-bold text-gray-700 mb-2">Confirmer le nouveau mot de passe *</label>
+            <input type="password" [(ngModel)]="passwordData.new_password_confirmation" name="new_password_confirmation" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-esto-primary/20 focus:border-esto-primary transition-all text-sm">
+          </div>
+        </div>
+        <div class="flex items-center gap-3 pt-6 border-t border-gray-100">
+          <button type="submit" [disabled]="isSaving" class="px-6 py-2.5 bg-gray-900 text-white text-sm font-bold rounded-xl hover:bg-gray-800 transition-colors shadow-sm disabled:opacity-50 flex items-center">
+            <svg *ngIf="isSaving" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            Enregistrer le nouveau mot de passe
+          </button>
+          <button type="button" (click)="cancelPassword()" [disabled]="isSaving" class="px-6 py-2.5 bg-gray-100 text-gray-700 text-sm font-bold rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50">
+            Annuler
+          </button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>

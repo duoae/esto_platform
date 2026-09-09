@@ -1,0 +1,270 @@
+<!-- Header -->
+<header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-white border-b border-gray-100 shadow-sm">
+  <div class="w-full px-6 lg:px-12 h-20 flex items-center justify-between">
+    
+    <div class="flex items-center gap-4">
+      <img src="https://if-maroc.org/oujda/wp-content/uploads/sites/10/2024/04/UMP.jpeg" alt="UMP Logo" class="h-14 w-auto object-contain hover:scale-105 transition-transform cursor-pointer" routerLink="/" style="mix-blend-mode: multiply; filter: contrast(1.2) brightness(1.05);">
+      <div class="hidden md:block border-l-2 border-gray-200 pl-4">
+        <h1 class="text-sm font-bold text-gray-900 leading-tight">École Supérieure<br>de Technologie</h1>
+      </div>
+    </div>
+    
+    <nav class="hidden lg:flex gap-8">
+      <a routerLink="/" class="text-gray-600 font-bold hover:text-esto-primary transition-colors text-sm uppercase tracking-wider">
+        Accueil
+      </a>
+      <a routerLink="/" fragment="labos" class="text-gray-600 font-bold hover:text-esto-primary transition-colors text-sm uppercase tracking-wider">Recherche & Labos</a>
+      <a routerLink="/" fragment="sujets" class="text-gray-600 font-bold hover:text-esto-primary transition-colors text-sm uppercase tracking-wider">Sujets de Thèse</a>
+      <a routerLink="/" fragment="admission" class="text-gray-600 font-bold hover:text-esto-primary transition-colors text-sm uppercase tracking-wider">Admission</a>
+    </nav>
+
+    <div class="hidden lg:flex items-center gap-4">
+      <a routerLink="/login" class="bg-esto-primary text-white font-bold px-6 py-2.5 rounded-lg shadow-lg hover:shadow-esto-primary/40 hover:-translate-y-0.5 transition-all">
+        Se Connecter
+      </a>
+    </div>
+  </div>
+</header>
+
+<div class="min-h-screen flex flex-col pt-20">
+  
+  <!-- Main content -->
+  <div class="flex-grow flex items-center justify-center bg-[#FDFBF7] py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 max-w-xl w-full relative z-10">
+
+
+    <!-- Stepper Indicator -->
+    <div class="flex items-center justify-center mb-8">
+      <div class="flex items-center space-x-4">
+        <div class="flex items-center justify-center w-8 h-8 rounded-full font-bold"
+             [ngClass]="currentStep === 1 ? 'bg-esto-primary text-white' : 'bg-green-500 text-white'">
+          <span *ngIf="currentStep === 1">1</span>
+          <svg *ngIf="currentStep > 1" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        </div>
+        <div class="h-1 w-12" [ngClass]="currentStep === 2 ? 'bg-esto-primary' : 'bg-gray-200'"></div>
+        <div class="flex items-center justify-center w-8 h-8 rounded-full font-bold"
+             [ngClass]="currentStep === 2 ? 'bg-esto-primary text-white' : 'bg-gray-200 text-gray-500'">
+          2
+        </div>
+      </div>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="errorMsg" class="mb-6 p-4 bg-red-50 text-red-600 rounded-xl text-sm font-medium border border-red-100">
+      {{ errorMsg }}
+    </div>
+
+    <!-- Step 1: Personal Info -->
+    <form *ngIf="currentStep === 1" (ngSubmit)="nextStep()" class="space-y-4">
+      
+      <div class="text-center mb-8 -mt-20 bg-white relative z-10 pt-4">
+        <h2 class="text-3xl font-black text-esto-text tracking-tight" style="font-family: serif;">Candidature Doctorale</h2>
+        <p class="text-xs text-gray-500 uppercase tracking-widest mt-1">Créer votre dossier de candidat</p>
+      </div>
+
+      <div class="flex items-center justify-center mb-8">
+        <div class="flex items-center w-full max-w-xs relative">
+          <div class="absolute left-0 right-0 h-0.5 bg-gray-200 top-1/2 -translate-y-1/2 z-0"></div>
+          <div class="w-6 h-6 rounded-full bg-esto-primary text-white flex items-center justify-center text-xs z-10 absolute left-0">1</div>
+          <div class="w-6 h-6 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs z-10 absolute right-0">2</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4 text-sm text-esto-text font-semibold">
+        <div>
+          <label class="block mb-1">Prénom</label>
+          <input type="text" [(ngModel)]="prenom" name="prenom" required class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none bg-white focus:ring-1 focus:ring-esto-primary font-normal">
+        </div>
+        <div>
+          <label class="block mb-1">Nom</label>
+          <input type="text" [(ngModel)]="nom" name="nom" required class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none bg-white focus:ring-1 focus:ring-esto-primary font-normal">
+        </div>
+      </div>
+
+      <div class="text-sm text-esto-text font-semibold">
+        <label class="block mb-1">Email</label>
+        <input type="email" [(ngModel)]="email" name="email" required class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none bg-white focus:ring-1 focus:ring-esto-primary font-normal">
+      </div>
+
+      <div class="grid grid-cols-2 gap-4 text-sm text-esto-text font-semibold">
+        <div>
+          <label class="block mb-1">CIN</label>
+          <input type="text" [(ngModel)]="cin" name="cin" required placeholder="Ex: F123456" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none bg-white focus:ring-1 focus:ring-esto-primary font-normal uppercase">
+        </div>
+        <div>
+          <label class="block mb-1">Téléphone</label>
+          <input type="tel" [(ngModel)]="telephone" name="telephone" required class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none bg-white focus:ring-1 focus:ring-esto-primary font-normal">
+        </div>
+      </div>
+
+
+
+      <div class="grid grid-cols-2 gap-4 text-sm text-esto-text font-semibold">
+        <div>
+          <label class="block mb-1">Mot de passe</label>
+          <input type="password" [(ngModel)]="password" name="password" required class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none bg-white focus:ring-1 focus:ring-esto-primary font-normal">
+        </div>
+        <div>
+          <label class="block mb-1">Confirmer</label>
+          <input type="password" [(ngModel)]="confirmPassword" name="confirmPassword" required class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none bg-white focus:ring-1 focus:ring-esto-primary font-normal">
+        </div>
+      </div>
+
+      <button type="button" (click)="nextStep()" class="w-full bg-esto-primary text-white py-3 rounded-lg font-bold hover:bg-esto-primary-dark transition-colors mt-6 text-sm">
+        Suivant
+      </button>
+      
+      <div class="text-center mt-6 text-sm text-gray-500">
+        Déjà inscrit ? <a routerLink="/login" class="font-bold text-esto-text hover:underline">Se connecter</a>
+      </div>
+    </form>
+
+    <!-- Step 2: Documents -->
+    <form *ngIf="currentStep === 2" (ngSubmit)="onSubmit()" class="space-y-5">
+      
+      <!-- Title override for Step 2 to match image -->
+      <div class="text-center mb-8 -mt-20 bg-white relative z-10 pt-4">
+        <h2 class="text-3xl font-black text-esto-text tracking-tight" style="font-family: serif;">Candidature Doctorale</h2>
+        <p class="text-xs text-gray-500 uppercase tracking-widest mt-1">Créer votre dossier de candidat</p>
+      </div>
+
+      <!-- Stepper indicator matching image (brown/gold) -->
+      <div class="flex items-center justify-center mb-8">
+        <div class="flex items-center w-full max-w-xs relative">
+          <div class="absolute left-0 right-0 h-0.5 bg-esto-primary top-1/2 -translate-y-1/2 z-0"></div>
+          <div class="w-6 h-6 rounded-full bg-esto-primary text-white flex items-center justify-center text-xs z-10 absolute left-0">1</div>
+          <div class="w-6 h-6 rounded-full bg-esto-primary text-white flex items-center justify-center text-xs z-10 absolute right-0">2</div>
+        </div>
+      </div>
+
+      <div class="space-y-4 text-sm font-semibold text-esto-text">
+        <div>
+          <label class="block mb-1">Diplôme obtenu (Bac+5)</label>
+          <select [(ngModel)]="diplome" name="diplome" required class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none bg-white focus:ring-1 focus:ring-esto-primary font-normal">
+            <option value="Master">Master</option>
+            <option value="Diplôme d'Ingénieur">Diplôme d'Ingénieur</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block mb-1">Laboratoire souhaité</label>
+          <select [(ngModel)]="laboratoire" name="laboratoire" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none bg-white focus:ring-1 focus:ring-esto-primary font-normal">
+            <option *ngIf="laboratoires.length === 0" value="" disabled>Chargement des laboratoires...</option>
+            <option *ngFor="let lab of laboratoires" [value]="lab.id">{{ lab.name || lab.nom }}</option>
+          </select>
+        </div>
+
+        <div class="pt-4">
+          <h3 class="uppercase tracking-widest text-xs mb-3">Dossier de candidature</h3>
+          
+          <div class="space-y-4">
+            <div>
+              <label class="block mb-1">CV</label>
+              <div class="w-full border border-gray-200 rounded-lg p-2 bg-white flex items-center text-gray-500 font-normal">
+                <input type="file" (change)="onFileChange($event, 'cv')" accept=".pdf,.png,.jpg,.jpeg" required class="w-full text-sm file:mr-3 file:py-1 file:px-3 file:rounded file:border file:border-gray-300 file:text-sm file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100 cursor-pointer">
+              </div>
+            </div>
+
+            <div>
+              <label class="block mb-1">Diplôme du Baccalauréat</label>
+              <div class="w-full border border-gray-200 rounded-lg p-2 bg-white flex items-center text-gray-500 font-normal">
+                <input type="file" (change)="onFileChange($event, 'bac')" accept=".pdf,.png,.jpg,.jpeg" required class="w-full text-sm file:mr-3 file:py-1 file:px-3 file:rounded file:border file:border-gray-300 file:text-sm file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100 cursor-pointer">
+              </div>
+            </div>
+
+            <div>
+              <label class="block mb-1">Diplôme Bac +2 (si il existe)</label>
+              <div class="w-full border border-gray-200 rounded-lg p-2 bg-white flex items-center text-gray-500 font-normal">
+                <input type="file" (change)="onFileChange($event, 'bac2')" accept=".pdf,.png,.jpg,.jpeg" class="w-full text-sm file:mr-3 file:py-1 file:px-3 file:rounded file:border file:border-gray-300 file:text-sm file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100 cursor-pointer">
+              </div>
+            </div>
+
+            <div>
+              <label class="block mb-1">Licence (si elle existe)</label>
+              <div class="w-full border border-gray-200 rounded-lg p-2 bg-white flex items-center text-gray-500 font-normal">
+                <input type="file" (change)="onFileChange($event, 'licence')" accept=".pdf,.png,.jpg,.jpeg" class="w-full text-sm file:mr-3 file:py-1 file:px-3 file:rounded file:border file:border-gray-300 file:text-sm file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100 cursor-pointer">
+              </div>
+            </div>
+
+            <div>
+              <label class="block mb-1">Master ou Diplôme d'Ingénieur</label>
+              <div class="w-full border border-gray-200 rounded-lg p-2 bg-white flex items-center text-gray-500 font-normal">
+                <input type="file" (change)="onFileChange($event, 'master')" accept=".pdf,.png,.jpg,.jpeg" required class="w-full text-sm file:mr-3 file:py-1 file:px-3 file:rounded file:border file:border-gray-300 file:text-sm file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100 cursor-pointer">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-4 pb-2">
+          <label class="flex items-start gap-3 cursor-pointer">
+            <input type="checkbox" required class="mt-1 w-4 h-4 text-esto-primary border-gray-300 rounded focus:ring-esto-primary">
+            <span class="text-xs text-gray-500 font-normal leading-relaxed">
+              J'atteste que les informations fournies dans ce dossier sont exactes et complètes, et j'assume l'entière responsabilité en cas d'informations erronées.
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <div class="flex gap-4 pt-2">
+        <button type="button" (click)="previousStep()" class="px-6 py-3 border border-esto-primary text-esto-primary rounded-lg font-bold hover:bg-orange-50 transition-colors text-sm">
+          Retour
+        </button>
+        <button type="submit" [disabled]="isLoading" class="flex-1 bg-esto-primary text-white py-3 rounded-lg font-bold hover:bg-esto-primary-dark transition-colors flex items-center justify-center text-sm">
+          <svg *ngIf="isLoading" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+          Soumettre ma candidature ✓
+        </button>
+      </div>
+
+      <div class="text-center mt-6 text-sm text-gray-500">
+        Déjà inscrit ? <a routerLink="/login" class="font-bold text-[#0f2c41] hover:underline">Se connecter</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 pt-10 pb-8 text-white w-full mt-auto">
+    <div class="w-full px-10 md:px-20 lg:px-32">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-24 mb-8">
+        <div>
+          <div class="flex items-center gap-4 mb-4">
+            <img src="https://if-maroc.org/oujda/wp-content/uploads/sites/10/2024/04/UMP.jpeg" alt="ESTO Logo" class="w-14 h-14 object-contain bg-white rounded-2xl p-1.5" onerror="this.src='https://if-maroc.org/oujda/wp-content/uploads/sites/10/2024/04/UMP.jpeg';">
+            <div>
+              <h3 class="font-black text-xl tracking-tight">ESTO</h3>
+              <p class="text-esto-primary font-bold text-xs tracking-widest uppercase">Plateforme Doctorale</p>
+            </div>
+          </div>
+          <p class="text-gray-400 text-sm leading-relaxed max-w-sm">
+            L'École Supérieure de Technologie d'Oujda s'engage pour l'excellence scientifique et l'innovation technologique à travers ses programmes doctoraux.
+          </p>
+        </div>
+        
+        <div class="md:ml-auto">
+          <h4 class="font-bold text-lg mb-4 text-white border-b border-gray-800 pb-2 inline-block">Contact</h4>
+          <ul class="space-y-3">
+            <li class="flex items-center gap-3 text-gray-400 text-sm">
+              <svg class="w-5 h-5 text-esto-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+              206 Blvd Mohammed VI, Oujda, Oriental
+            </li>
+            <li class="flex items-center gap-3 text-gray-400 text-sm">
+              <svg class="w-5 h-5 text-esto-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+              recherche&#64;ump.ac.ma
+            </li>
+            <li class="flex items-center gap-3 text-gray-400 text-sm">
+              <svg class="w-5 h-5 text-esto-primary" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+              <a href="https://www.facebook.com/UniversityOUJDA/" target="_blank" class="hover:text-esto-primary transition-colors">Facebook</a>
+            </li>
+            <li class="flex items-center gap-3 text-gray-400 text-sm">
+              <svg class="w-5 h-5 text-esto-primary" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+              <a href="https://www.youtube.com/channel/UCyFXZbYLiKOkthY26bCPn1Q" target="_blank" class="hover:text-esto-primary transition-colors">YouTube</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="border-t border-gray-800 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
+        <p class="text-gray-500 text-sm">&copy; 2026 Université Mohammed Premier - ESTO. Tous droits réservés.</p>
+      </div>
+    </div>
+  </footer>
+</div>

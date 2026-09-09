@@ -1,0 +1,146 @@
+<div class="h-full flex flex-col p-4">
+  <!-- Header & Search -->
+  <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+    <div>
+      <h1 class="text-xl font-bold text-gray-800 tracking-tight">Historique du Chatbot</h1>
+      <p class="text-xs text-gray-500 mt-1">Consultez les questions et réponses de l'IA.</p>
+    </div>
+    
+    <div class="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
+      
+      <!-- Top Questions Dropdown -->
+      <select *ngIf="stats?.top_questions?.length > 0"
+              [(ngModel)]="searchQuery" (change)="onSearch()"
+              class="block py-2 pl-3 pr-8 border border-gray-200 rounded-lg text-sm bg-teal-50 text-teal-700 font-medium focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all max-w-[200px]">
+        <option value="">Questions fréquentes...</option>
+        <option *ngFor="let q of stats.top_questions" [value]="q">{{ q }}</option>
+      </select>
+
+      <!-- Difficulties Dropdown -->
+      <select [(ngModel)]="searchQuery" (change)="onSearch()" [disabled]="!stats?.difficultes_rencontrees?.length"
+              class="block py-2 pl-3 pr-8 border rounded-lg text-sm transition-all max-w-[200px]"
+              [ngClass]="stats?.difficultes_rencontrees?.length ? 'border-rose-200 bg-rose-50 text-rose-700 focus:ring-rose-500' : 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed'">
+        <option value="">Difficultés ({{ stats?.difficultes_rencontrees?.length || 0 }})...</option>
+        <option *ngFor="let q of stats?.difficultes_rencontrees" [value]="q">{{ q }}</option>
+      </select>
+
+      <!-- Period Filter -->
+      <select [(ngModel)]="selectedPeriod" (change)="onPeriodChange()"
+              class="block py-2 pl-3 pr-8 border border-gray-200 rounded-lg text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all text-gray-600">
+        <option value="">Toutes les dates</option>
+        <option value="jour">Aujourd'hui</option>
+        <option value="semaine">Cette semaine</option>
+        <option value="mois">Ce mois-ci</option>
+      </select>
+      
+      <!-- Search Input -->
+      <div class="relative w-full sm:w-64">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        </div>
+        <input type="text" [(ngModel)]="searchQuery" (keyup)="onSearch()" placeholder="Rechercher..."
+               class="block w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all">
+      </div>
+    </div>
+  </header>
+
+  <!-- KPIs Dashboard -->
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-6" *ngIf="stats">
+    <!-- Interactions -->
+    <div class="bg-white rounded-md p-5 border border-gray-100 shadow-sm flex items-center justify-between">
+      <div>
+        <h3 class="text-2xl font-bold text-slate-800 leading-none">{{ stats.total_interactions }}</h3>
+        <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider mt-2">Interactions Totales</p>
+      </div>
+      <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+    </div>
+
+    <!-- Conversations (Sessions) -->
+    <div class="bg-white rounded-md p-5 border border-gray-100 shadow-sm flex items-center justify-between">
+      <div>
+        <h3 class="text-2xl font-bold text-slate-800 leading-none">{{ stats.total_sessions }}</h3>
+        <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider mt-2">Conversations Uniques</p>
+      </div>
+      <svg class="w-8 h-8 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+    </div>
+
+    <!-- Taux d'échec -->
+    <div class="bg-white rounded-md p-5 border border-gray-100 shadow-sm flex items-center justify-between">
+      <div>
+        <h3 class="text-2xl font-bold text-slate-800 leading-none">{{ stats.taux_echec }}%</h3>
+        <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider mt-2">Taux de Difficulté</p>
+      </div>
+      <svg class="w-8 h-8 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+    </div>
+
+    <!-- Latence Moyenne -->
+    <div class="bg-white rounded-md p-5 border border-gray-100 shadow-sm flex items-center justify-between">
+      <div>
+        <h3 class="text-2xl font-bold text-slate-800 leading-none">{{ stats.temps_reponse_moyen }}</h3>
+        <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider mt-2">Latence Moyenne</p>
+      </div>
+      <svg class="w-8 h-8 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="flex-1 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
+    <div class="overflow-x-auto flex-1 custom-scrollbar">
+      <table class="w-full text-left text-sm text-gray-600">
+        <thead class="bg-gray-50 text-gray-500 text-xs uppercase font-semibold sticky top-0 z-10 border-b border-gray-100">
+          <tr>
+            <th class="px-4 py-3 w-32 border-b border-gray-100">Date</th>
+            <th class="px-4 py-3 w-1/3 border-b border-gray-100">Question du Visiteur</th>
+            <th class="px-4 py-3 border-b border-gray-100">Réponse du Bot</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-50">
+          <tr *ngIf="isLoading">
+            <td colspan="3" class="px-4 py-8 text-center text-gray-400 text-sm">
+              <svg class="animate-spin h-5 w-5 mx-auto mb-2 text-teal-500" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+              Chargement...
+            </td>
+          </tr>
+          <tr *ngIf="!isLoading && logs.length === 0">
+            <td colspan="3" class="px-4 py-8 text-center text-gray-400 text-sm">
+              Aucune interaction trouvée.
+            </td>
+          </tr>
+          <tr *ngFor="let log of logs" class="hover:bg-gray-50/50 transition-colors group">
+            <td class="px-4 py-3 align-top whitespace-nowrap">
+              <div class="text-gray-800 font-medium text-xs">{{ log.created_at | date:'dd/MM/yyyy' }}</div>
+              <div class="text-[10px] text-gray-400 mt-0.5">{{ log.created_at | date:'HH:mm:ss' }}</div>
+            </td>
+            <td class="px-4 py-3 align-top">
+              <div class="bg-blue-50/50 text-blue-800 p-2.5 rounded-lg border border-blue-100/50 text-xs shadow-sm">
+                <span class="font-semibold mr-1">Q:</span> {{ log.question }}
+              </div>
+            </td>
+            <td class="px-4 py-3 align-top">
+              <div class="bg-orange-50/30 text-orange-900 p-2.5 rounded-lg border border-orange-100 text-xs whitespace-pre-wrap leading-relaxed shadow-sm">
+                <span class="font-semibold mr-1">R:</span> {{ log.reponse }}
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <!-- Pagination -->
+    <div class="bg-gray-50 px-4 py-3 border-t border-gray-100 flex items-center justify-between" *ngIf="pagination.last_page > 1">
+      <span class="text-xs text-gray-500 font-medium">
+        Page {{ currentPage }} / {{ pagination.last_page }}
+      </span>
+      <div class="flex space-x-1">
+        <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1"
+                class="px-3 py-1.5 bg-white text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-xs font-medium transition-colors shadow-sm">
+          Précédent
+        </button>
+        <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === pagination.last_page"
+                class="px-3 py-1.5 bg-white text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-xs font-medium transition-colors shadow-sm">
+          Suivant
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

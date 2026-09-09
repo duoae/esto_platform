@@ -1,0 +1,406 @@
+<div class="h-full flex flex-col p-4">
+  <header class="flex items-center justify-between mb-3">
+    <div>
+      <h1 class="text-xl font-bold text-gray-800 tracking-tight">Laboratoires</h1>
+    </div>
+    <button (click)="openModal()" class="flex items-center justify-center bg-esto-primary hover:bg-esto-primary-dark text-white w-9 h-9 rounded-full font-bold text-lg transition-all shadow-sm hover:shadow" title="Nouveau Laboratoire">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+    </button>
+  </header>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="flex flex-col items-center justify-center h-64 space-y-4">
+    <svg class="animate-spin h-10 w-10 text-esto-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+    </svg>
+    <p class="text-gray-500 font-medium animate-pulse">Chargement des laboratoires...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && laboratoires.length === 0" class="bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center p-12">
+    <div class="w-20 h-20 bg-esto-primary/10 rounded-full flex items-center justify-center mb-4">
+      <svg class="w-10 h-10 text-esto-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+    </div>
+    <h2 class="text-xl font-bold text-gray-800 mb-2">Aucun laboratoire trouvé</h2>
+    <p class="text-gray-500 mb-6 text-center max-w-md">Commencez par ajouter votre premier laboratoire de recherche pour pouvoir y affecter des directeurs et professeurs.</p>
+    <button (click)="openModal()" class="px-5 py-2.5 bg-esto-primary text-white text-sm font-semibold rounded-xl hover:bg-esto-primary-dark transition-colors shadow-sm">
+      Ajouter un laboratoire
+    </button>
+  </div>
+
+  <!-- List of Laboratories -->
+  <div *ngIf="!isLoading && laboratoires.length > 0" class="flex flex-col gap-4">
+    <!-- List Item -->
+    <div *ngFor="let lab of laboratoires; let i = index" class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-shadow flex flex-col sm:flex-row sm:items-center gap-4 cursor-pointer" (click)="viewLab(lab.id)">
+      
+      <!-- Acronym Badge -->
+      <div class="h-16 min-w-[64px] px-3 shrink-0 rounded-xl flex items-center justify-center font-bold text-lg" [ngClass]="getBadgeColor(i)">
+        {{ lab.acronym || lab.acronyme || 'L' | uppercase }}
+      </div>
+
+      <!-- Main Info -->
+      <div class="flex-1 min-w-0">
+        <h3 class="text-lg font-bold text-gray-900 truncate mb-1">{{ lab.name || lab.nom }}</h3>
+        
+        <div class="flex items-center gap-2 flex-wrap mt-2">
+          <span class="text-xs text-gray-500 font-medium">Thématiques :</span>
+          <span *ngFor="let theme of lab.themes" class="px-2.5 py-1 bg-gray-50 border border-gray-100 text-gray-600 rounded-md text-xs font-medium">
+            {{ theme }}
+          </span>
+          <span *ngIf="!lab.themes || lab.themes.length === 0" class="text-xs text-gray-400 italic">
+            Aucune
+          </span>
+        </div>
+      </div>
+      
+      <!-- Actions -->
+      <div class="flex items-center gap-2 shrink-0">
+        <button (click)="$event.stopPropagation(); openModal(lab)" class="p-2 text-green-500 hover:text-green-700 hover:bg-green-50 rounded-lg transition-colors" title="Modifier">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+        </button>
+        <button (click)="$event.stopPropagation(); deleteLab(lab.id)" class="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors" title="Supprimer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Modal Form -->
+<div *ngIf="isModalOpen" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+  <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+    
+    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" (click)="closeModal()"></div>
+
+    <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+    <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+      <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <div class="sm:flex sm:items-start">
+          <div class="mt-3 text-center sm:mt-0 sm:text-left w-full">
+            <h3 class="text-lg leading-6 font-bold text-gray-900 mb-6" id="modal-title">
+              {{ isEditing ? 'Modifier le laboratoire' : 'Nouveau laboratoire' }}
+            </h3>
+            
+            <form (ngSubmit)="saveLab()" #labForm="ngForm" class="space-y-8">
+              
+              <!-- Section A: Identification -->
+              <div>
+                <h4 class="text-md font-bold text-gray-800 border-b pb-2 mb-4">A. Identification du laboratoire</h4>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div class="sm:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Intitulé du Laboratoire <span class="text-red-500">*</span></label>
+                    <input type="text" [(ngModel)]="formData.nom" name="nom" required
+                           class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-esto-primary focus:border-esto-primary outline-none transition-colors"
+                           placeholder="Ex: Mathématiques Appliquées, Traitement du Signal...">
+                  </div>
+  
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Acronyme <span class="text-red-500">*</span></label>
+                    <input type="text" [(ngModel)]="formData.acronyme" name="acronyme" required
+                           class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-esto-primary focus:border-esto-primary outline-none transition-colors"
+                           placeholder="Ex: MATSI">
+                  </div>
+                  
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Établissement d'attache</label>
+                    <input type="text" [(ngModel)]="formData.etablissement" name="etablissement"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-esto-primary focus:border-esto-primary outline-none transition-colors"
+                           placeholder="Ex: ESTO">
+                  </div>
+                  
+                  <div class="sm:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Locaux (Local propre)</label>
+                    <input type="text" [(ngModel)]="formData.locaux" name="locaux"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-esto-primary focus:border-esto-primary outline-none transition-colors"
+                           placeholder="Ex: Bâtiment A, Salle 12...">
+                  </div>
+  
+                  <div class="sm:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Thématiques de recherche</label>
+                    <p class="text-xs text-gray-500 mb-2">Entrez une thématique par ligne.</p>
+                    <textarea [(ngModel)]="thematiquesText" name="thematiquesText" rows="3"
+                              class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-esto-primary focus:border-esto-primary outline-none transition-colors"
+                              placeholder="Mathématiques appliquées&#10;Traitement du signal..."></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Section B: Direction -->
+              <div>
+                <h4 class="text-md font-bold text-gray-800 border-b pb-2 mb-4">B. Direction du laboratoire</h4>
+                
+                <div class="bg-gray-50 p-4 rounded-xl mb-4 border border-gray-100">
+                  <h5 class="text-sm font-bold text-gray-700 mb-3">Directeur du laboratoire</h5>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <input type="text" [(ngModel)]="formData.director_name" name="director_name" placeholder="Nom et prénom (ex: MOUSSAOUI Omar)" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg">
+                    </div>
+                    <div>
+                      <input type="email" [(ngModel)]="formData.director_email" name="director_email" placeholder="E-mail institutionnel" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg">
+                    </div>
+                    <div>
+                      <input type="text" [(ngModel)]="formData.director_title" name="director_title" placeholder="Spécialité (ex: Informatique)" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg">
+                    </div>
+                    <div>
+                      <input type="text" [(ngModel)]="formData.director_phone" name="director_phone" placeholder="Téléphone (ex: +212 6...)" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                  <h5 class="text-sm font-bold text-gray-700 mb-3">Directeur adjoint</h5>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <input type="text" [(ngModel)]="formData.adjoint_name" name="adjoint_name" placeholder="Nom et prénom" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg">
+                    </div>
+                    <div>
+                      <input type="email" [(ngModel)]="formData.adjoint_email" name="adjoint_email" placeholder="E-mail institutionnel" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg">
+                    </div>
+                    <div>
+                      <input type="text" [(ngModel)]="formData.adjoint_title" name="adjoint_title" placeholder="Spécialité" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg">
+                    </div>
+                    <div>
+                      <input type="text" [(ngModel)]="formData.adjoint_phone" name="adjoint_phone" placeholder="Téléphone" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Section C: Equipes -->
+              <div>
+                <div class="flex items-center justify-between border-b pb-2 mb-4">
+                  <h4 class="text-md font-bold text-gray-800">C. Équipes du laboratoire</h4>
+                  <button type="button" (click)="addEquipe()" class="text-xs bg-esto-primary/10 text-esto-primary font-bold px-3 py-1.5 rounded-lg hover:bg-esto-primary/20 transition-colors">
+                    + Ajouter une équipe
+                  </button>
+                </div>
+
+                <div *ngFor="let eq of formData.equipes; let i = index" class="relative bg-white border border-gray-200 p-4 rounded-xl mb-4 shadow-sm">
+                  <button type="button" (click)="removeEquipe(i)" class="absolute top-3 right-3 text-red-500 hover:bg-red-50 p-1.5 rounded-lg transition-colors" title="Supprimer l'équipe">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                  </button>
+                  <h5 class="text-sm font-bold text-esto-primary mb-3">Équipe {{ i + 1 }}</h5>
+                  
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                    <div class="sm:col-span-2">
+                      <input type="text" [(ngModel)]="eq.nom" name="eq_nom_{{i}}" placeholder="Nom de l'équipe (ex: Mathématiques Appliquées et Traitement d'Images)" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg font-medium">
+                    </div>
+                    <div>
+                      <input type="text" [(ngModel)]="eq.coordinateur" name="eq_coord_{{i}}" placeholder="Coordinateur (ex: NASRI M'Barek)" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg">
+                    </div>
+                    <div>
+                      <input type="text" [(ngModel)]="eq.thematique" name="eq_theme_{{i}}" placeholder="Thématique de l'équipe" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg">
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <textarea [(ngModel)]="eq.axesText" name="eq_axes_{{i}}" rows="2" placeholder="Axes de recherche (un par ligne)" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg"></textarea>
+                  </div>
+                </div>
+
+                <div *ngIf="formData.equipes.length === 0" class="text-center py-6 bg-gray-50 rounded-xl border border-dashed border-gray-300">
+                  <p class="text-sm text-gray-500">Aucune équipe ajoutée. Cliquez sur le bouton + pour commencer.</p>
+                </div>
+              </div>
+
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-2xl border-t border-gray-100">
+        <button type="button" (click)="saveLab()" [disabled]="!labForm.form.valid"
+                class="w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-4 py-2 bg-esto-primary text-base font-medium text-white hover:bg-esto-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-esto-primary sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+          {{ isEditing ? 'Enregistrer' : 'Créer' }}
+        </button>
+        <button type="button" (click)="closeModal()"
+                class="mt-3 w-full inline-flex justify-center rounded-xl border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-esto-primary sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+          Annuler
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- View Details Modal -->
+<div *ngIf="isViewModalOpen" class="fixed inset-0 z-[60] overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+  <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:p-0">
+    <div class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm transition-opacity" aria-hidden="true" (click)="closeViewModal()"></div>
+    <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+    <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full border border-gray-100">
+      
+      <!-- Header -->
+      <div class="bg-white px-8 py-6 border-b border-gray-100 flex items-start justify-between">
+        <div class="flex items-center gap-4">
+          <div class="h-14 min-w-[56px] px-3 shrink-0 rounded-xl flex items-center justify-center font-bold text-lg tracking-tight shadow-sm"
+               [ngClass]="getBadgeColor(viewedLabIndex)">
+            {{ viewedLab?.acronyme || viewedLab?.acronym || 'L' | uppercase }}
+          </div>
+          <div>
+            <h3 class="text-xl font-bold text-gray-900">{{ viewedLab?.nom }}</h3>
+            <div class="flex items-center gap-2 mt-1 text-sm text-gray-500">
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+              {{ viewedLab?.etablissement || 'ESTO' }}
+            </div>
+          </div>
+        </div>
+        <button (click)="closeViewModal()" class="text-gray-400 hover:text-gray-700 bg-white hover:bg-gray-50 rounded-lg p-2 transition-colors border border-transparent hover:border-gray-200">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="bg-white px-8 py-8">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-10">
+          
+          <!-- Left Column (Info & Thématiques) -->
+          <div class="md:col-span-5 space-y-8">
+            
+            <!-- Direction -->
+            <div>
+              <h4 class="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2 border-b border-gray-100 pb-2">
+                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                Direction
+              </h4>
+              <div class="pt-2">
+                <div class="flex items-center gap-3" *ngIf="viewedLab?.directeur">
+                  <div class="w-10 h-10 bg-gray-50 border border-gray-100 text-gray-600 rounded-full flex items-center justify-center font-semibold text-sm">
+                    {{ viewedLab.directeur.nom?.charAt(0) }}{{ viewedLab.directeur.prenom?.charAt(0) }}
+                  </div>
+                  <div>
+                    <p class="font-medium text-gray-900 text-sm">{{ viewedLab.directeur.nom }} {{ viewedLab.directeur.prenom }}</p>
+                    <p class="text-xs text-gray-500">{{ viewedLab.directeur.email }}</p>
+                  </div>
+                </div>
+                <div *ngIf="!viewedLab?.directeur" class="text-gray-400 text-sm italic">
+                  Non assigné
+                </div>
+              </div>
+            </div>
+
+            <!-- Thématiques -->
+            <div>
+              <h4 class="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2 border-b border-gray-100 pb-2">
+                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                Thématiques de recherche
+              </h4>
+              <ul class="space-y-2 pt-2" *ngIf="viewedLab?.thematiques?.length > 0">
+                <li *ngFor="let theme of viewedLab.thematiques" class="flex items-start gap-2 text-sm text-gray-700 font-medium">
+                  <span class="text-gray-300 mt-1">•</span>
+                  <span>{{ theme.nom || theme.libelle || theme.name || theme }}</span>
+                </li>
+              </ul>
+              <p *ngIf="!viewedLab?.thematiques || viewedLab.thematiques.length === 0" class="text-sm text-gray-400 italic pt-2">Aucune thématique renseignée.</p>
+            </div>
+            
+          </div>
+
+          <!-- Right Column (Equipes & Membres) -->
+          <div class="md:col-span-7 space-y-8">
+            
+            <!-- Équipes -->
+            <div>
+              <div class="flex items-center justify-between border-b border-gray-100 pb-2 mb-4">
+                <h4 class="text-sm font-bold text-gray-800 flex items-center gap-2">
+                  <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                  Équipes de recherche
+                </h4>
+                <span class="bg-gray-50 text-gray-500 px-2 rounded-full text-xs font-medium">{{ viewedLab?.equipes?.length || 0 }}</span>
+              </div>
+              
+              <ul class="divide-y divide-gray-100" *ngIf="viewedLab?.equipes?.length > 0">
+                <li *ngFor="let eq of viewedLab.equipes" class="py-4">
+                  <div class="flex flex-col sm:flex-row sm:items-baseline gap-2 justify-between mb-2">
+                    <h5 class="font-medium text-gray-900 text-sm">{{ eq.nom }}</h5>
+                    <span *ngIf="eq.coordinateur" class="text-xs text-gray-500">Coord: {{ eq.coordinateur }}</span>
+                  </div>
+                  <div *ngIf="eq.thematique" class="text-xs text-gray-500 mb-2">
+                    <span class="font-medium text-gray-400">Thématique :</span> {{ eq.thematique }}
+                  </div>
+                  
+                  <div *ngIf="eq.axes?.length > 0" class="mt-2 pl-2 border-l-2 border-gray-200">
+                    <p class="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">Axes de recherche</p>
+                    <ul class="space-y-1">
+                       <li *ngFor="let axe of eq.axes" class="text-xs text-gray-600 flex items-start gap-1.5">
+                         <span class="text-gray-400 mt-0.5">•</span>
+                         <span>{{ axe.nom || axe.name || axe.titre || axe.libelle || axe }}</span>
+                       </li>
+                    </ul>
+                  </div>
+                </li>
+              </ul>
+              <p *ngIf="!viewedLab?.equipes || viewedLab.equipes.length === 0" class="text-sm text-gray-400 italic pt-2">Aucune équipe ajoutée.</p>
+            </div>
+
+            <!-- Membres -->
+            <div class="pt-2">
+              <div class="flex items-center justify-between border-b border-gray-100 pb-2 mb-4">
+                <h4 class="text-sm font-bold text-gray-800 flex items-center gap-2">
+                  <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                  Membres associés
+                </h4>
+                <span class="bg-gray-50 text-gray-500 px-2 rounded-full text-xs font-medium">{{ viewedLab?.membres?.length || 0 }}</span>
+              </div>
+              
+              <ul class="divide-y divide-gray-100" *ngIf="viewedLab?.membres?.length > 0">
+                <li *ngFor="let membre of viewedLab.membres" class="py-3 flex items-center gap-3">
+                  <div class="w-8 h-8 bg-gray-50 border border-gray-100 text-gray-600 rounded-full flex items-center justify-center font-medium text-xs">
+                    {{ membre.nom?.charAt(0) }}{{ membre.prenom?.charAt(0) }}
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="font-medium text-gray-900 text-sm truncate">{{ membre.nom }} {{ membre.prenom }}</p>
+                  </div>
+                  <div class="text-xs text-gray-500 bg-gray-50 px-2 py-0.5 rounded">
+                    {{ membre.role || 'Professeur' }}
+                  </div>
+                </li>
+              </ul>
+              <p *ngIf="!viewedLab?.membres || viewedLab.membres.length === 0" class="text-sm text-gray-400 italic pt-2">Aucun membre n'est affilié.</p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Confirmation -->
+<div *ngIf="showConfirmModal" class="fixed inset-0 z-[70] overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+  <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+    <div class="fixed inset-0 bg-gray-900 bg-opacity-40 backdrop-blur-sm transition-opacity" aria-hidden="true" (click)="closeConfirmModal()"></div>
+
+    <div class="relative inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md w-full border border-gray-100">
+      <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <div class="sm:flex sm:items-start">
+          <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full sm:mx-0 sm:h-10 sm:w-10 bg-red-100">
+            <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+            <h3 class="text-lg leading-6 font-bold text-gray-900" id="modal-title">
+              Confirmation de suppression
+            </h3>
+            <div class="mt-2">
+              <p class="text-sm text-gray-500">
+                Êtes-vous sûr de vouloir supprimer ce laboratoire ? Cette action est irréversible.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-gray-100">
+        <button type="button" (click)="confirmDelete()" class="w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm transition-colors">
+          Supprimer
+        </button>
+        <button type="button" (click)="closeConfirmModal()" class="mt-3 w-full inline-flex justify-center rounded-xl border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-esto-primary sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition-colors">
+          Annuler
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

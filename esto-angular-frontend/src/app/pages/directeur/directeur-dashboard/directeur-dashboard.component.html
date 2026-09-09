@@ -1,0 +1,227 @@
+<div class="space-y-6 w-full px-6 pb-12 bg-gray-50 min-h-screen">
+  <!-- Header -->
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-gray-200 pb-4 pt-6">
+    <div>
+      <h1 class="text-lg font-bold text-gray-900 tracking-tight">Tableau de bord - {{ lab?.acronyme }}</h1>
+      <p class="text-gray-500 mt-1 text-xs">{{ lab?.nom }}</p>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="flex justify-center py-20">
+    <svg class="animate-spin h-8 w-8 text-esto-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+    </svg>
+  </div>
+
+  <div *ngIf="!isLoading && stats" class="space-y-8">
+
+
+    
+    <!-- LEVEL 1: KPIs Principaux -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-5 flex items-center justify-between hover:shadow-md transition-shadow">
+        <div>
+          <p class="text-2xl font-bold text-gray-800">{{ stats.kpis?.professeurs || 0 }}</p>
+          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mt-1">Professeurs</p>
+        </div>
+        <div class="text-indigo-400">
+          <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-5 flex items-center justify-between hover:shadow-md transition-shadow">
+        <div>
+          <p class="text-2xl font-bold text-gray-800">{{ stats.kpis?.sujets || 0 }}</p>
+          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mt-1">Sujets Actifs</p>
+        </div>
+        <div class="text-purple-400">
+          <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477-4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+        </div>
+      </div>
+      
+      <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-5 flex items-center justify-between hover:shadow-md transition-shadow">
+        <div>
+          <p class="text-2xl font-bold text-gray-800">{{ stats.kpis?.candidatures_recues || 0 }}</p>
+          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mt-1">Candidatures</p>
+        </div>
+        <div class="text-blue-400">
+          <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-5 flex items-center justify-between hover:shadow-md transition-shadow">
+        <div>
+          <p class="text-2xl font-bold text-gray-800">{{ stats.kpis?.doctorants || 0 }}</p>
+          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mt-1">Candidats</p>
+        </div>
+        <div class="text-emerald-400">
+          <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path></svg>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- LEVEL 2: Alertes du Laboratoire & Actions Rapides -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <!-- Suivi et Alertes -->
+      <div *ngIf="stats.alertes" class="lg:col-span-1 bg-white rounded-3xl shadow-sm border border-gray-100 flex flex-col">
+        <div class="px-6 py-4 border-b border-gray-100">
+          <h3 class="text-gray-800 font-bold flex items-center gap-2">
+            <svg class="w-5 h-5 text-esto-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            Suivi et Alertes
+          </h3>
+        </div>
+        <div class="p-6 flex flex-col justify-center gap-4 flex-1">
+          
+          <!-- Candidatures en attente -->
+          <div class="flex items-center gap-4 p-4 rounded-2xl border border-red-100 bg-red-50/50">
+            <div class="w-12 h-12 rounded-full bg-red-100 text-red-500 flex items-center justify-center shrink-0">
+              <span class="text-xl font-bold">{{ stats.alertes.candidatures_en_attente || 0 }}</span>
+            </div>
+            <div>
+              <h4 class="font-bold text-gray-900">En attente</h4>
+              <p class="text-xs text-gray-500 mt-0.5">Candidatures non traitées</p>
+            </div>
+          </div>
+
+          <!-- Sujets sans candidats -->
+          <div class="flex items-center gap-4 p-4 rounded-2xl border border-yellow-100 bg-yellow-50/50">
+            <div class="w-12 h-12 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center shrink-0">
+              <span class="text-xl font-bold">{{ stats.alertes.sujets_sans_candidats || 0 }}</span>
+            </div>
+            <div>
+              <h4 class="font-bold text-gray-900">Sujets inactifs</h4>
+              <p class="text-xs text-gray-500 mt-0.5">Aucune demande reçue</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Actions Rapides -->
+      <div class="lg:col-span-2 bg-white rounded-3xl shadow-sm border border-gray-100 flex flex-col">
+        <div class="px-6 py-4 border-b border-gray-100">
+          <h3 class="text-gray-800 font-bold">Actions Rapides</h3>
+        </div>
+        <div class="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1">
+          
+          <a routerLink="/directeur/mon-laboratoire" class="group flex items-center p-4 rounded-2xl bg-blue-50 border border-blue-100 hover:bg-blue-600 hover:text-white transition-all cursor-pointer">
+            <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center group-hover:bg-white/20 group-hover:text-white transition-colors mr-4 shrink-0">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+            </div>
+            <div>
+              <h4 class="font-bold text-gray-900 group-hover:text-white">Mon Laboratoire</h4>
+              <p class="text-xs text-gray-500 group-hover:text-blue-100 mt-0.5">Détails et configuration</p>
+            </div>
+          </a>
+          
+          <a routerLink="/directeur/sujets" class="group flex items-center p-4 rounded-2xl bg-indigo-50 border border-indigo-100 hover:bg-indigo-600 hover:text-white transition-all cursor-pointer">
+            <div class="w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center group-hover:bg-white/20 group-hover:text-white transition-colors mr-4 shrink-0">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477-4.5 1.253"></path></svg>
+            </div>
+            <div>
+              <h4 class="font-bold text-gray-900 group-hover:text-white">Sujets de Thèse</h4>
+              <p class="text-xs text-gray-500 group-hover:text-indigo-100 mt-0.5">Gérer les propositions du labo</p>
+            </div>
+          </a>
+          
+          <a routerLink="/directeur/candidats" class="group flex items-center p-4 rounded-2xl bg-orange-50 border border-orange-100 hover:bg-orange-500 hover:text-white transition-all cursor-pointer">
+            <div class="w-12 h-12 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center group-hover:bg-white/20 group-hover:text-white transition-colors mr-4 shrink-0">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            </div>
+            <div>
+              <h4 class="font-bold text-gray-900 group-hover:text-white">Candidatures</h4>
+              <p class="text-xs text-gray-500 group-hover:text-orange-100 mt-0.5">Suivre les demandes d'admission</p>
+            </div>
+          </a>
+          
+          <a routerLink="/directeur/professeurs" class="group flex items-center p-4 rounded-2xl bg-emerald-50 border border-emerald-100 hover:bg-emerald-500 hover:text-white transition-all cursor-pointer">
+            <div class="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center group-hover:bg-white/20 group-hover:text-white transition-colors mr-4 shrink-0">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+            </div>
+            <div>
+              <h4 class="font-bold text-gray-900 group-hover:text-white">Les Professeurs</h4>
+              <p class="text-xs text-gray-500 group-hover:text-emerald-100 mt-0.5">Gérer l'équipe du labo</p>
+            </div>
+          </a>
+          
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- LEVEL 3: Statut des Candidatures & Professeurs (Real-Time Current State) -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      
+      <!-- État Actuel des Candidatures -->
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 flex flex-col">
+        <div class="px-5 py-3 border-b border-gray-100 bg-gray-50/50">
+          <h2 class="text-sm font-bold text-gray-900">État Actuel des Candidatures</h2>
+        </div>
+        <div class="p-6 flex-1 flex justify-around items-center">
+            <div class="text-center">
+              <div class="inline-flex items-center justify-center w-24 h-24 rounded-full border-4 border-yellow-400 text-2xl font-bold text-gray-700">
+                {{ statusCounts.en_attente }}
+              </div>
+              <p class="text-sm text-gray-500 mt-3 font-medium">En attente</p>
+            </div>
+            <div class="text-center">
+              <div class="inline-flex items-center justify-center w-24 h-24 rounded-full border-4 border-emerald-400 text-2xl font-bold text-gray-700">
+                {{ statusCounts.accepte + statusCounts.admis }}
+              </div>
+              <p class="text-sm text-gray-500 mt-3 font-medium">Acceptés</p>
+            </div>
+            <div class="text-center">
+              <div class="inline-flex items-center justify-center w-24 h-24 rounded-full border-4 border-rose-400 text-2xl font-bold text-gray-700">
+                {{ statusCounts.refuse }}
+              </div>
+              <p class="text-sm text-gray-500 mt-3 font-medium">Refusés</p>
+            </div>
+          </div>
+      </div>
+
+      <!-- Table: Top Professeurs -->
+      <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden flex flex-col">
+        <div class="px-5 py-3 border-b border-gray-100 bg-gray-50/50">
+          <h2 class="text-sm font-bold text-gray-900">Professeurs les plus sollicités (Top 5)</h2>
+        </div>
+        <div class="overflow-x-auto flex-1">
+          <table class="w-full text-left text-sm whitespace-nowrap">
+            <thead class="text-xs text-gray-500 uppercase bg-white border-b border-gray-100">
+              <tr>
+                <th scope="col" class="px-5 py-3 font-semibold">Professeur</th>
+                <th scope="col" class="px-5 py-3 font-semibold text-right">Demandes</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50">
+              <tr *ngFor="let prof of topProfessors; let i = index" class="hover:bg-gray-50 transition-colors">
+                <td class="px-5 py-3 font-medium text-gray-900 flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-xs border border-blue-100">
+                    {{ prof.nom.charAt(0) }}{{ prof.prenom.charAt(0) }}
+                  </div>
+                  <div>
+                    <p class="text-gray-900 font-semibold text-sm">Pr. {{ prof.nom }} {{ prof.prenom }}</p>
+                    <p class="text-xs text-gray-400 mt-0.5">Rang #{{ i + 1 }}</p>
+                  </div>
+                </td>
+                <td class="px-5 py-3 text-right">
+                  <span class="inline-flex items-center justify-center px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700 font-bold text-xs border border-indigo-100">
+                    {{ prof.requests }}
+                  </span>
+                </td>
+              </tr>
+              <tr *ngIf="topProfessors.length === 0">
+                <td colspan="2" class="px-5 py-8 text-center text-gray-400 text-sm italic">Aucune donnée disponible.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>

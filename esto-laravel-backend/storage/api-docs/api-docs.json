@@ -1,0 +1,1395 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "ESTO Plateforme Doctorale API",
+        "description": "API REST complète de la Plateforme de Gestion Doctorale — École Supérieure de Technologie d'Oujda (UMP)",
+        "contact": {
+            "email": "admin@ump.ac.ma"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://127.0.0.1:8000",
+            "description": "Serveur de développement local"
+        }
+    ],
+    "paths": {
+        "/api/dashboard-stats": {
+            "get": {
+                "tags": [
+                    "Statistiques"
+                ],
+                "summary": "Obtenir les statistiques du tableau de bord",
+                "operationId": "11ed2b06a2e00e950f98afafa5dac806",
+                "responses": {
+                    "200": {
+                        "description": "Statistiques récupérées avec succès"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/users": {
+            "get": {
+                "tags": [
+                    "Utilisateurs"
+                ],
+                "summary": "Lister tous les utilisateurs",
+                "operationId": "3265ab79c9b880008ed804d6b5e3059a",
+                "parameters": [
+                    {
+                        "name": "role",
+                        "in": "query",
+                        "description": "Filtrer par rôle (admin, directeur, professeur, candidat)",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "lab_id",
+                        "in": "query",
+                        "description": "Filtrer par laboratoire",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste des utilisateurs"
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Utilisateurs"
+                ],
+                "summary": "Créer un nouvel utilisateur (Admin)",
+                "operationId": "7cfe4acccb16b697b910fb2c3d8eb350",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nom",
+                                    "prenom",
+                                    "email",
+                                    "password",
+                                    "role"
+                                ],
+                                "properties": {
+                                    "nom": {
+                                        "type": "string",
+                                        "example": "Benali"
+                                    },
+                                    "prenom": {
+                                        "type": "string",
+                                        "example": "Youssef"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "y.benali@esto.ma"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "Password123!"
+                                    },
+                                    "role": {
+                                        "type": "string",
+                                        "enum": [
+                                            "admin",
+                                            "directeur",
+                                            "professeur",
+                                            "candidat"
+                                        ],
+                                        "example": "professeur"
+                                    },
+                                    "laboratoire_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Utilisateur créé"
+                    },
+                    "422": {
+                        "description": "Données invalides"
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/users/{id}": {
+            "put": {
+                "tags": [
+                    "Utilisateurs"
+                ],
+                "summary": "Modifier un utilisateur",
+                "operationId": "d273e38b4ab89cda9bf08737d4bd1dcd",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "nom": {
+                                        "type": "string"
+                                    },
+                                    "prenom": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "role": {
+                                        "type": "string",
+                                        "enum": [
+                                            "admin",
+                                            "directeur",
+                                            "professeur",
+                                            "candidat"
+                                        ]
+                                    },
+                                    "laboratoire_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Utilisateur mis à jour"
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Utilisateurs"
+                ],
+                "summary": "Supprimer un utilisateur",
+                "operationId": "60aeabff552065f790abfd07c24a27ad",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Utilisateur supprimé"
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/stats": {
+            "get": {
+                "tags": [
+                    "Utilisateurs"
+                ],
+                "summary": "Statistiques globales du tableau de bord Admin",
+                "operationId": "b1b20f78f84973a48b4e9c380957babe",
+                "responses": {
+                    "200": {
+                        "description": "Statistiques: nombre d'utilisateurs, labs, sujets, candidatures par statut"
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/register": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Inscription d'un nouvel utilisateur",
+                "operationId": "ca7c0cb6772de9bffbb8c896980cebc8",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Mohamed El Amrani"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "candidat@esto.umxo.ma"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Compte créé avec succès"
+                    },
+                    "500": {
+                        "description": "Erreur serveur"
+                    }
+                }
+            }
+        },
+        "/api/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Connexion de l'utilisateur",
+                "operationId": "c373bc4cffa4a56fc64e3979b8ee7b96",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "candidat@esto.umxo.ma"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Connexion réussie"
+                    },
+                    "422": {
+                        "description": "Identifiants invalides"
+                    },
+                    "500": {
+                        "description": "Erreur serveur"
+                    }
+                }
+            }
+        },
+        "/api/me": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Récupérer l'utilisateur connecté",
+                "operationId": "57d51f3fa328d534a6ee8562484d0687",
+                "responses": {
+                    "200": {
+                        "description": "Profil récupéré avec succès"
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Déconnexion de l'utilisateur",
+                "operationId": "5ff2dc8b48bff52908d3821a0ecc9b3e",
+                "responses": {
+                    "200": {
+                        "description": "Déconnexion réussie"
+                    },
+                    "500": {
+                        "description": "Erreur serveur"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/candidatures": {
+            "get": {
+                "tags": [
+                    "Candidatures"
+                ],
+                "summary": "Lister toutes les candidatures",
+                "operationId": "05bf49e6862aa158db5e9efeda438d33",
+                "responses": {
+                    "200": {
+                        "description": "Liste des candidatures avec documents et sujets"
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Candidatures"
+                ],
+                "summary": "Déposer une nouvelle candidature avec documents",
+                "operationId": "f0d817184b16851ee818994da951a25e",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "laboratoire_id",
+                                    "diplome_obtenu",
+                                    "sujets",
+                                    "cv",
+                                    "diplome_bac",
+                                    "diplome_master"
+                                ],
+                                "properties": {
+                                    "laboratoire_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "diplome_obtenu": {
+                                        "type": "string",
+                                        "example": "Master"
+                                    },
+                                    "sujets[]": {
+                                        "description": "Tableau contenant les IDs de 3 sujets maximum",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "cv": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "diplome_bac": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "diplome_licence": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "diplome_master": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Candidature déposée avec succès"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/candidatures/{id}": {
+            "get": {
+                "tags": [
+                    "Candidatures"
+                ],
+                "summary": "Afficher le détail d'une candidature",
+                "operationId": "1a4f0abc1194f55e4fbe01d02749c52b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Détail de la candidature"
+                    },
+                    "404": {
+                        "description": "Candidature introuvable"
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/candidatures/{id}/statut": {
+            "patch": {
+                "tags": [
+                    "Candidatures"
+                ],
+                "summary": "Mettre à jour le statut d'une candidature",
+                "operationId": "2dff9221d2a30229c4085854eafc2b88",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "statut"
+                                ],
+                                "properties": {
+                                    "statut": {
+                                        "type": "string",
+                                        "enum": [
+                                            "en_attente",
+                                            "preselectionne",
+                                            "accepte",
+                                            "refuse"
+                                        ],
+                                        "example": "accepte"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Statut mis à jour"
+                    },
+                    "422": {
+                        "description": "Statut invalide"
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/candidatures/{id}/documents": {
+            "post": {
+                "tags": [
+                    "Candidatures"
+                ],
+                "summary": "Ajouter de nouveaux documents à une candidature",
+                "operationId": "4bc738358001db3bccee0e7f41ca5f20",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "nom_document",
+                                    "fichier"
+                                ],
+                                "properties": {
+                                    "nom_document": {
+                                        "type": "string",
+                                        "example": "Lettre de motivation"
+                                    },
+                                    "fichier": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Document ajouté avec succès"
+                    },
+                    "403": {
+                        "description": "Non autorisé"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/encadrements": {
+            "get": {
+                "tags": [
+                    "Encadrements"
+                ],
+                "summary": "Lister les encadrements",
+                "operationId": "75539268fd85ebc62424ee4613ac052e",
+                "responses": {
+                    "200": {
+                        "description": "Succès"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Encadrements"
+                ],
+                "summary": "Créer un encadrement",
+                "operationId": "43344a900d04deaee8709cec364d0130",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "doctorant_id",
+                                    "sujet_id"
+                                ],
+                                "properties": {
+                                    "doctorant_id": {
+                                        "type": "integer"
+                                    },
+                                    "sujet_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Encadrement créé"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/doctorant/suivi": {
+            "get": {
+                "tags": [
+                    "Encadrements"
+                ],
+                "summary": "Afficher l'encadrement et le suivi du doctorant connecté",
+                "operationId": "d309a4164cb073f269d1c1e952b2bb4d",
+                "responses": {
+                    "200": {
+                        "description": "Détails du suivi"
+                    },
+                    "404": {
+                        "description": "Aucun encadrement trouvé"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/labs": {
+            "get": {
+                "tags": [
+                    "Laboratoires"
+                ],
+                "summary": "Lister tous les laboratoires",
+                "operationId": "201370c9a5ced3d188d002b66306c3c0",
+                "responses": {
+                    "200": {
+                        "description": "Liste des laboratoires"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Laboratoires"
+                ],
+                "summary": "Créer un nouveau laboratoire",
+                "operationId": "59bb9e3fcb1aeb28d0541dfecadb2014",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nom",
+                                    "code"
+                                ],
+                                "properties": {
+                                    "nom": {
+                                        "type": "string",
+                                        "example": "Laboratoire Informatique"
+                                    },
+                                    "code": {
+                                        "type": "string",
+                                        "example": "LI-01"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Laboratoire de recherche en informatique"
+                                    },
+                                    "capacite_max": {
+                                        "type": "integer",
+                                        "example": 10
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Laboratoire créé"
+                    },
+                    "422": {
+                        "description": "Données invalides"
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/labs/{id}": {
+            "put": {
+                "tags": [
+                    "Laboratoires"
+                ],
+                "summary": "Modifier un laboratoire",
+                "operationId": "5e0194d5c9636441fc3c01f2fbbfca39",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "nom": {
+                                        "type": "string",
+                                        "example": "Nouveau nom"
+                                    },
+                                    "code": {
+                                        "type": "string",
+                                        "example": "LI-02"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "capacite_max": {
+                                        "type": "integer",
+                                        "example": 15
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Laboratoire mis à jour"
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Laboratoires"
+                ],
+                "summary": "Supprimer un laboratoire",
+                "operationId": "7c696fa1baea77d83a52ac314e559987",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Laboratoire supprimé"
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/labs/{id}/members": {
+            "get": {
+                "tags": [
+                    "Laboratoires"
+                ],
+                "summary": "Lister les membres d'un laboratoire",
+                "operationId": "3b76ee2daa52db04f6d3f98d4923af17",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste des membres du laboratoire"
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/notifications": {
+            "get": {
+                "tags": [
+                    "Notifications"
+                ],
+                "summary": "Lister les notifications de l'utilisateur",
+                "operationId": "62d35468db63872957c9b9bc45399d4c",
+                "responses": {
+                    "200": {
+                        "description": "Succès"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/notifications/{id}/read": {
+            "put": {
+                "tags": [
+                    "Notifications"
+                ],
+                "summary": "Marquer une notification comme lue",
+                "operationId": "6c597613a266c7a2601430bd5bf944b7",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Marquée comme lue"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/profil": {
+            "get": {
+                "tags": [
+                    "Profil"
+                ],
+                "summary": "Afficher les informations du profil",
+                "operationId": "96a78c742caef97b24e27afabfd86ae9",
+                "responses": {
+                    "200": {
+                        "description": "Informations du profil"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Profil"
+                ],
+                "summary": "Mettre à jour les informations du profil",
+                "operationId": "10c0f7603bb666d5fb29ace884f94929",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Nouveau Nom"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "email@test.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Profil mis à jour avec succès"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/profil/password": {
+            "put": {
+                "tags": [
+                    "Profil"
+                ],
+                "summary": "Modifier le mot de passe",
+                "operationId": "b81a0b74dcdf391c6d3d8fc0977f2eb8",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "current_password",
+                                    "new_password",
+                                    "new_password_confirmation"
+                                ],
+                                "properties": {
+                                    "current_password": {
+                                        "type": "string",
+                                        "format": "password"
+                                    },
+                                    "new_password": {
+                                        "type": "string",
+                                        "format": "password"
+                                    },
+                                    "new_password_confirmation": {
+                                        "type": "string",
+                                        "format": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Mot de passe modifié avec succès"
+                    },
+                    "422": {
+                        "description": "Validation failed"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/subjects": {
+            "get": {
+                "tags": [
+                    "Sujets"
+                ],
+                "summary": "Lister tous les sujets de thèse",
+                "operationId": "3ec7006ef982f4e44f6dc65d0e55e4bd",
+                "parameters": [
+                    {
+                        "name": "lab",
+                        "in": "query",
+                        "description": "Filtrer par ID de laboratoire",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste des sujets de thèse"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Sujets"
+                ],
+                "summary": "Créer un nouveau sujet de thèse",
+                "operationId": "f29ce71563e5fe693862e9070c8ddc4c",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "titre",
+                                    "laboratoire_id"
+                                ],
+                                "properties": {
+                                    "titre": {
+                                        "type": "string",
+                                        "example": "Intelligence artificielle et santé"
+                                    },
+                                    "objectif": {
+                                        "type": "string",
+                                        "example": "Objectif du sujet de recherche"
+                                    },
+                                    "laboratoire_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "equipe_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "statut": {
+                                        "type": "string",
+                                        "enum": [
+                                            "disponible",
+                                            "attribue",
+                                            "cloture"
+                                        ],
+                                        "example": "disponible"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Sujet créé avec succès"
+                    },
+                    "422": {
+                        "description": "Données invalides"
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/subjects/{id}": {
+            "put": {
+                "tags": [
+                    "Sujets"
+                ],
+                "summary": "Modifier un sujet de thèse",
+                "operationId": "841edf615d9fd5be9671c75caacf3a25",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "titre": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "statut": {
+                                        "type": "string",
+                                        "enum": [
+                                            "disponible",
+                                            "attribue",
+                                            "cloture"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Sujet mis à jour"
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Sujets"
+                ],
+                "summary": "Supprimer un sujet de thèse",
+                "operationId": "2ad6b7d5f798b22037ff1f0c396640d1",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sujet supprimé"
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/suivi-evaluations": {
+            "post": {
+                "tags": [
+                    "Suivi & Evaluation"
+                ],
+                "summary": "Ajouter une évaluation et mettre à jour le taux d'avancement",
+                "operationId": "70e50123df29e53840d70f910909f591",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "encadrement_id",
+                                    "type",
+                                    "taux_avancement"
+                                ],
+                                "properties": {
+                                    "encadrement_id": {
+                                        "type": "integer"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "note",
+                                            "rapport",
+                                            "comite",
+                                            "alerte"
+                                        ]
+                                    },
+                                    "taux_avancement": {
+                                        "type": "integer",
+                                        "maximum": 100,
+                                        "minimum": 0
+                                    },
+                                    "note": {
+                                        "type": "string",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Évaluation créée"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/my-suivi": {
+            "get": {
+                "tags": [
+                    "Suivi & Evaluation"
+                ],
+                "summary": "Récupérer l'historique de suivi du doctorant connecté",
+                "operationId": "cd6d6988579e1e9e86c29f28664c42e9",
+                "responses": {
+                    "200": {
+                        "description": "Historique récupéré"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Statistiques",
+            "description": "Tableaux de bord (Admin et Directeur)"
+        },
+        {
+            "name": "Auth",
+            "description": "Authentification et gestion de session"
+        },
+        {
+            "name": "Laboratoires",
+            "description": "Gestion des laboratoires de recherche"
+        },
+        {
+            "name": "Sujets",
+            "description": "Gestion des sujets de thèse"
+        },
+        {
+            "name": "Utilisateurs",
+            "description": "Gestion des utilisateurs"
+        },
+        {
+            "name": "Encadrements",
+            "description": "Gestion des encadrements de thèse"
+        },
+        {
+            "name": "Notifications",
+            "description": "Gestion des notifications"
+        },
+        {
+            "name": "Profil",
+            "description": "Gestion du profil utilisateur"
+        },
+        {
+            "name": "Suivi & Evaluation",
+            "description": "Suivi de l'avancement des doctorants"
+        },
+        {
+            "name": "Candidatures",
+            "description": "Candidatures"
+        }
+    ]
+}

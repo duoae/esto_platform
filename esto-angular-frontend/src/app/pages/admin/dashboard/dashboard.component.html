@@ -1,0 +1,303 @@
+<div class="space-y-6 pb-12 w-full px-6">
+  <!-- Header -->
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-gray-200 pb-4 pt-4">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Tableau de bord Analytique Intégral</h1>
+      <p class="text-gray-500 mt-1 text-sm">Vue hyper-détaillée de la plateforme et de ses activités (Administration)</p>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="flex justify-center py-20">
+    <svg class="animate-spin h-8 w-8 text-esto-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+    </svg>
+  </div>
+
+  <div *ngIf="!isLoading && !stats" class="bg-red-50 text-red-600 p-6 rounded-lg text-center font-medium mt-10">
+     Impossible de charger les données. Veuillez vérifier votre connexion ou vous reconnecter (Votre session a peut-être expiré).
+  </div>
+
+  <div *ngIf="!isLoading && stats && stats.role === 'admin'" class="space-y-6">
+    
+    <!-- LEVEL 1: Main KPIs (All unified in the exact same style and size) -->
+    <div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-4 mb-6">
+      
+      <!-- Utilisateurs -->
+      <div class="bg-white rounded-md p-5 border border-gray-100 shadow-sm flex items-center justify-between">
+        <div>
+          <h3 class="text-2xl font-bold text-slate-800 leading-none">{{ stats.kpis?.utilisateurs || 0 }}</h3>
+          <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider mt-2">Utilisateurs</p>
+        </div>
+        <svg class="w-8 h-8 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+      </div>
+
+      <!-- Candidatures -->
+      <div class="bg-white rounded-md p-5 border border-gray-100 shadow-sm flex items-center justify-between">
+        <div>
+          <h3 class="text-2xl font-bold text-slate-800 leading-none">{{ stats.kpis?.candidatures || 0 }}</h3>
+          <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider mt-2">Candidatures</p>
+        </div>
+        <svg class="w-8 h-8 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+      </div>
+
+      <!-- Sujets -->
+      <div class="bg-white rounded-md p-5 border border-gray-100 shadow-sm flex items-center justify-between">
+        <div>
+          <h3 class="text-2xl font-bold text-slate-800 leading-none">{{ stats.kpis?.sujets || 0 }}</h3>
+          <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider mt-2">Sujets</p>
+        </div>
+        <svg class="w-8 h-8 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+        </svg>
+      </div>
+
+      <!-- Laboratoires -->
+      <div class="bg-white rounded-md p-5 border border-gray-100 shadow-sm flex items-center justify-between">
+        <div>
+          <h3 class="text-2xl font-bold text-slate-800 leading-none">{{ stats.kpis?.laboratoires || 0 }}</h3>
+          <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider mt-2">Laboratoires</p>
+        </div>
+        <svg class="w-8 h-8 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+        </svg>
+      </div>
+
+      <!-- Équipes Rech -->
+      <div class="bg-white rounded-md p-5 border border-gray-100 shadow-sm flex items-center justify-between">
+        <div>
+          <h3 class="text-2xl font-bold text-slate-800 leading-none">{{ stats.kpis?.equipes || 0 }}</h3>
+          <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider mt-2">Équipes Rech.</p>
+        </div>
+        <svg class="w-8 h-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+      </div>
+
+      <!-- Thématiques -->
+      <div class="bg-white rounded-md p-5 border border-gray-100 shadow-sm flex items-center justify-between">
+        <div>
+          <h3 class="text-2xl font-bold text-slate-800 leading-none">{{ stats.kpis?.thematiques || 0 }}</h3>
+          <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider mt-2">Thématiques</p>
+        </div>
+        <svg class="w-8 h-8 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+        </svg>
+      </div>
+
+      <!-- Admis -->
+      <div class="bg-white rounded-md p-5 border border-gray-100 shadow-sm flex items-center justify-between">
+        <div>
+          <h3 class="text-2xl font-bold text-slate-800 leading-none">{{ totalAdmis }}</h3>
+          <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider mt-2">Admis</p>
+        </div>
+        <svg class="w-8 h-8 text-teal-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+
+      <!-- Messages -->
+      <div class="bg-white rounded-md p-5 border border-gray-100 shadow-sm flex items-center justify-between">
+        <div>
+          <h3 class="text-2xl font-bold text-slate-800 leading-none">{{ totalMessages }}</h3>
+          <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider mt-2">Messages</p>
+        </div>
+        <svg class="w-8 h-8 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+        </svg>
+      </div>
+
+      <!-- Conversations -->
+      <div class="bg-white rounded-md p-5 border border-gray-100 shadow-sm flex items-center justify-between">
+        <div>
+          <h3 class="text-2xl font-bold text-slate-800 leading-none">{{ totalConversations }}</h3>
+          <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider mt-2">Conversations</p>
+        </div>
+        <svg class="w-8 h-8 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
+        </svg>
+      </div>
+
+      <!-- I.A Chatbot -->
+      <div class="bg-white rounded-md p-5 border border-gray-100 shadow-sm flex items-center justify-between">
+        <div>
+          <h3 class="text-2xl font-bold text-slate-800 leading-none">{{ totalChatbot }}</h3>
+          <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider mt-2">I.A Chatbot</p>
+        </div>
+        <svg class="w-8 h-8 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+      </div>
+      
+    </div>
+
+    <!-- LEVEL 2: Graphical Dashboard -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+      
+      <!-- Colonne Gauche: Courbes & Barres (Prend 2/3 de l'espace) -->
+      <div class="lg:col-span-2 flex flex-col gap-6">
+        
+        <!-- 1. Overview Chart (Bar + Line) -->
+        <div class="bg-white rounded-sm p-4 border border-gray-200 shadow-sm flex flex-col flex-1">
+          <h2 class="text-sm font-bold text-gray-800 text-center mb-1">Aperçu Général</h2>
+          <div class="flex justify-between items-center text-[10px] text-gray-500 mb-4 px-4">
+             <span>Derniers 12 mois</span>
+             <div class="flex gap-4">
+                <span class="font-bold text-gray-900">Inscrits: {{ maxInscriptions }}</span>
+                <span class="font-bold text-gray-900">Messages: {{ maxMessages }}</span>
+             </div>
+          </div>
+          <div class="relative h-48 w-full">
+            <canvas id="overviewChart"></canvas>
+          </div>
+        </div>
+
+        <!-- 2. Area Chart (Chatbot) -->
+        <div class="bg-white rounded-sm p-4 border border-gray-200 shadow-sm flex flex-col flex-1">
+          <h2 class="text-sm font-bold text-gray-800 text-center mb-1">Requêtes I.A (Chatbot)</h2>
+          <div class="flex justify-between items-center text-[10px] text-gray-500 mb-4 px-4">
+             <span>Activité mensuelle</span>
+             <span class="font-bold text-gray-900">Total: {{ totalChatbot }}</span>
+          </div>
+          <div class="relative h-48 w-full">
+            <canvas id="chatbotAreaChart"></canvas>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Colonne Droite: Donut (Prend 1/3 de l'espace) -->
+      <div class="lg:col-span-1 bg-white rounded-sm p-4 border border-gray-200 shadow-sm flex flex-col justify-center">
+        <h2 class="text-sm font-bold text-gray-800 text-center mb-1">Statut des Candidatures</h2>
+        <div class="text-[10px] text-gray-500 mb-4 text-center">Répartition globale</div>
+        <div class="relative h-64 w-full flex items-center justify-center">
+          <canvas id="statusDonutChart"></canvas>
+          <div class="absolute inset-0 flex items-center justify-center flex-col pointer-events-none mt-2">
+            <span class="text-xs text-gray-500">Total</span>
+            <span class="text-lg font-black text-gray-800">{{ totalCandidaturesStatus }}</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- LEVEL 3: Distributions -->
+    <div class="grid grid-cols-1 gap-6">
+      
+      <!-- Diplomes Distribution -->
+      <div class="bg-white rounded-sm p-6 border border-gray-200 shadow-sm flex flex-col">
+        <h2 class="text-sm font-bold text-gray-900 mb-6">Profil des Candidats (Diplôme)</h2>
+        <div class="flex-1 space-y-4">
+          <div *ngFor="let key of objectKeys(diplomes)" class="group">
+            <div class="flex justify-between items-start mb-1">
+              <span class="font-medium text-gray-700 text-[11px] uppercase tracking-wider line-clamp-1 pr-4">{{ key }}</span>
+              <span class="text-xs font-black text-blue-600 whitespace-nowrap">{{ diplomes[key] }}</span>
+            </div>
+            <div class="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
+              <div class="bg-blue-500 h-1.5 rounded-full" [style.width.%]="calcPercent(diplomes[key], stats.kpis?.utilisateurs || 1)"></div>
+            </div>
+          </div>
+          <div *ngIf="objectKeys(diplomes).length === 0" class="text-sm text-gray-400 italic">Aucune donnée sur les diplômes.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- LEVEL 4: Data Tables & Detailed Analytics -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      
+      <!-- Table: Laboratoires (Col 7) -->
+      <div class="lg:col-span-7 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
+        <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+          <h2 class="text-sm font-bold text-gray-900">Activité Détaillée des Laboratoires</h2>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm whitespace-nowrap">
+            <thead class="bg-gray-50 text-gray-500 text-[10px] uppercase font-bold border-b border-gray-100">
+              <tr>
+                <th class="px-5 py-3">Laboratoire</th>
+                <th class="px-5 py-3 text-center">Professeurs</th>
+                <th class="px-5 py-3 text-center">Sujets Actifs</th>
+                <th class="px-5 py-3 text-center">Candidatures (Total)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+              <tr *ngFor="let lab of laboratoires" class="hover:bg-gray-50/50 transition-colors">
+                <td class="px-5 py-3">
+                  <div class="font-bold text-gray-900">{{ lab.acronyme }}</div>
+                  <div class="text-[11px] text-gray-500 truncate max-w-[200px]" [title]="lab.nom">{{ lab.nom }}</div>
+                </td>
+                <td class="px-5 py-3 text-center text-gray-700 font-medium">{{ lab.professeurs_count }}</td>
+                <td class="px-5 py-3 text-center text-gray-700 font-medium">{{ lab.sujets_count }}</td>
+                <td class="px-5 py-3 text-center font-bold" [ngClass]="{'text-indigo-600': lab.candidatures_count > 0, 'text-gray-400': lab.candidatures_count === 0}">
+                  {{ lab.candidatures_count }}
+                </td>
+              </tr>
+              <tr *ngIf="laboratoires.length === 0">
+                <td colspan="4" class="px-5 py-8 text-center text-gray-500 text-sm italic">Aucun laboratoire enregistré.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Flux d'activités & Profs (Col 5) -->
+      <div class="lg:col-span-5 flex flex-col gap-6">
+        
+        <!-- Table: Top Professeurs -->
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
+          <div class="px-5 py-3 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+            <h2 class="text-sm font-bold text-gray-900">Professeurs les plus sollicités (Top 5)</h2>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm whitespace-nowrap">
+              <tbody class="divide-y divide-gray-100">
+                <tr *ngFor="let prof of topProfessors; let i = index" class="hover:bg-gray-50/50 transition-colors">
+                  <td class="px-5 py-2.5 font-bold text-gray-900 text-xs">
+                    <span class="text-gray-400 mr-2">#{{ i + 1 }}</span>
+                    Pr. {{ prof.nom }} {{ prof.prenom }}
+                  </td>
+                  <td class="px-5 py-2.5 text-right">
+                    <span class="inline-block px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 font-bold text-[10px] border border-indigo-100">
+                      {{ prof.requests }} Demandes
+                    </span>
+                  </td>
+                </tr>
+                <tr *ngIf="topProfessors.length === 0">
+                  <td colspan="2" class="px-5 py-4 text-center text-gray-500 text-xs italic">Aucune donnée.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Recent Activity Feed -->
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
+          <div class="px-5 py-3 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+            <h2 class="text-sm font-bold text-gray-900">Flux d'activités (Récent)</h2>
+          </div>
+          <div class="p-4 space-y-4">
+            <div *ngFor="let act of recentActivity" class="flex gap-3">
+              <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+              </div>
+              <div>
+                <p class="text-[12px] font-bold text-gray-900">{{ act.candidat }} <span class="font-normal text-gray-500">a postulé au</span> {{ act.labo }}</p>
+                <p class="text-[10px] text-gray-400 mt-0.5">{{ act.date }} - Statut: <span class="font-medium text-gray-600 uppercase">{{ act.status }}</span></p>
+              </div>
+            </div>
+            <div *ngIf="recentActivity.length === 0" class="text-center text-gray-400 text-xs italic py-4">
+              Aucune activité récente.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>

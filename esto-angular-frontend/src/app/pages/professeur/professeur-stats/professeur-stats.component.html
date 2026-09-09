@@ -1,0 +1,217 @@
+<div class="space-y-6 pb-12 w-full px-6">
+  <!-- Header -->
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-gray-200 pb-4 pt-4">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Statistiques Générales</h1>
+      <p class="text-gray-500 mt-1 text-sm">Vue globale de votre espace professeur</p>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="flex justify-center py-20">
+    <svg class="animate-spin h-8 w-8 text-esto-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+    </svg>
+  </div>
+
+  <div *ngIf="!isLoading && !stats" class="bg-red-50 text-red-600 p-6 rounded-lg text-center font-medium mt-10">
+     Impossible de charger les données. Veuillez vérifier votre connexion ou vous reconnecter.
+  </div>
+
+  <div *ngIf="!isLoading && stats" class="animate-fade-in space-y-6 mt-6">
+    
+    <!-- Alert Actionable -->
+    <div *ngIf="candidaturesEnAttente > 0" class="bg-amber-50 border-l-4 border-amber-400 p-4 rounded-md mb-6 flex items-center justify-between shadow-sm">
+      <div class="flex items-center">
+        <svg class="h-6 w-6 text-amber-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        <div>
+          <h3 class="text-sm font-bold text-amber-800">Action Requise</h3>
+          <p class="text-xs text-amber-700">Vous avez <strong>{{ candidaturesEnAttente }} candidature(s)</strong> en attente de traitement ou validation.</p>
+        </div>
+      </div>
+      <a routerLink="/professeur/candidatures" class="text-xs font-bold bg-amber-500 text-white px-4 py-2 rounded-md hover:bg-amber-600 transition-colors shadow-sm">Traiter</a>
+    </div>
+
+    <!-- LEVEL 1: Main KPIs -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      
+      <!-- Sujets -->
+      <div class="bg-white rounded-md p-5 border border-gray-100 shadow-sm flex items-center justify-between">
+        <div>
+          <h3 class="text-2xl font-bold text-slate-800 leading-none">{{ stats.kpis?.sujets || 0 }}</h3>
+          <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider mt-2">Mes Sujets</p>
+        </div>
+        <svg class="w-8 h-8 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477-4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+        </svg>
+      </div>
+
+      <!-- Candidatures -->
+      <div class="bg-white rounded-md p-5 border border-gray-100 shadow-sm flex items-center justify-between">
+        <div>
+          <h3 class="text-2xl font-bold text-slate-800 leading-none">{{ stats.kpis?.candidatures_recues || 0 }}</h3>
+          <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider mt-2">Candidatures</p>
+        </div>
+        <svg class="w-8 h-8 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+      </div>
+
+      <!-- Doctorants -->
+      <div class="bg-white rounded-md p-5 border border-gray-100 shadow-sm flex items-center justify-between">
+        <div>
+          <h3 class="text-2xl font-bold text-slate-800 leading-none">{{ stats.kpis?.doctorants || 0 }}</h3>
+          <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider mt-2">Mes Doctorants</p>
+        </div>
+        <svg class="w-8 h-8 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 14l9-5-9-5-9 5 9 5z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path>
+        </svg>
+      </div>
+
+      <!-- Messages -->
+      <div class="bg-white rounded-md p-5 border border-gray-100 shadow-sm flex items-center justify-between">
+        <div>
+          <h3 class="text-2xl font-bold text-slate-800 leading-none">{{ stats.kpis?.messages || 0 }}</h3>
+          <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider mt-2">Messages envoyés</p>
+        </div>
+        <svg class="w-8 h-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+        </svg>
+      </div>
+      
+    </div>
+
+    <!-- LEVEL 2: Charts -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+      
+      <!-- Évolution des Demandes (2 cols) -->
+      <div class="lg:col-span-2 bg-white rounded-sm p-4 border border-gray-200 shadow-sm flex flex-col flex-1">
+        <h2 class="text-sm font-bold text-gray-800 text-center mb-1">Évolution Globale des Candidatures</h2>
+        <div class="flex justify-between items-center text-[10px] text-gray-500 mb-4 px-4">
+           <span>6 derniers mois</span>
+           <div class="flex gap-4">
+              <span class="font-bold text-gray-900">Total Candidatures: {{ stats.kpis?.candidatures_recues || 0 }}</span>
+           </div>
+        </div>
+        <div class="relative h-64 w-full">
+          <canvas id="overviewChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Statut des Candidatures (1 col) -->
+      <div class="lg:col-span-1 bg-white rounded-sm p-4 border border-gray-200 shadow-sm flex flex-col justify-center">
+        <h2 class="text-sm font-bold text-gray-800 text-center mb-1">Statut des Candidatures</h2>
+        <div class="text-[10px] text-gray-500 mb-4 text-center">Répartition globale</div>
+        <div class="relative h-64 w-full flex items-center justify-center">
+          <canvas id="statusDonutChart"></canvas>
+          <div class="absolute inset-0 flex items-center justify-center flex-col pointer-events-none mt-2">
+            <span class="text-xs text-gray-500">Total</span>
+            <span class="text-lg font-black text-gray-800">{{ totalCandidaturesStatus }}</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- LEVEL 3: Tables -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      
+      <!-- Table: Sujets (Col 7) -->
+      <div class="lg:col-span-7 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
+        <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+          <h2 class="text-sm font-bold text-gray-900">Aperçu des Sujets Proposés</h2>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm whitespace-nowrap">
+            <thead class="bg-gray-50 text-gray-500 text-[10px] uppercase font-bold border-b border-gray-100">
+              <tr>
+                <th class="px-5 py-3">Sujet de Thèse</th>
+                <th class="px-5 py-3 text-right">Demandes</th>
+                <th class="px-5 py-3 text-right text-emerald-600">Admis</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+              <tr *ngFor="let sujet of topSubjects" class="hover:bg-gray-50/50 transition-colors">
+                <td class="px-5 py-3">
+                  <div class="font-bold text-gray-900 truncate max-w-[400px]" [title]="sujet.titre">{{ sujet.titre }}</div>
+                </td>
+                <td class="px-5 py-3 text-right font-bold" [ngClass]="{'text-indigo-600': sujet.total > 0, 'text-gray-400': sujet.total === 0}">
+                  {{ sujet.total }}
+                </td>
+                <td class="px-5 py-3 text-right font-bold" [ngClass]="{'text-emerald-600': sujet.total_accepte > 0, 'text-gray-400': !sujet.total_accepte || sujet.total_accepte === 0}">
+                  {{ sujet.total_accepte || 0 }}
+                </td>
+              </tr>
+              <tr *ngIf="topSubjects.length === 0">
+                <td colspan="3" class="px-5 py-8 text-center text-gray-500 text-sm italic">Vous n'avez pas encore de sujets avec des candidatures.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Recent Activity Feed (Col 5) -->
+      <div class="lg:col-span-5 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
+        <div class="px-5 py-3 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+          <h2 class="text-sm font-bold text-gray-900">Activité Récente de l'Espace</h2>
+        </div>
+        <div class="p-4 space-y-4">
+          <div *ngFor="let act of recentActivity" class="flex gap-3">
+            <div class="h-8 w-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-xs shrink-0">
+               +
+            </div>
+            <div>
+              <p class="text-xs text-gray-800"><span class="font-bold">{{ act.candidat }}</span> a postulé.</p>
+              <p class="text-[10px] text-gray-400">{{ act.date }} - Statut : {{ act.status | uppercase }}</p>
+            </div>
+          </div>
+          <div *ngIf="recentActivity.length === 0" class="text-xs text-gray-400 italic text-center py-4">
+             Aucune activité récente.
+          </div>
+        </div>
+      </div>
+      
+    </div>
+
+    <!-- LEVEL 4: Mes Doctorants -->
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col mb-6">
+      <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+        <h2 class="text-sm font-bold text-gray-900">Mes Doctorants Actuels</h2>
+        <span class="text-xs bg-esto-primary text-white px-2 py-1 rounded-full font-bold">{{ mesDoctorants.length }}</span>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm whitespace-nowrap">
+          <thead class="bg-gray-50 text-gray-500 text-[10px] uppercase font-bold tracking-wider">
+            <tr>
+              <th class="px-5 py-3">Doctorant</th>
+              <th class="px-5 py-3">Sujet de Recherche</th>
+              <th class="px-5 py-3 text-right">Date d'admission</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            <tr *ngFor="let doc of mesDoctorants" class="hover:bg-gray-50/50 transition-colors">
+              <td class="px-5 py-3 font-medium text-gray-900">
+                <div class="flex items-center gap-2">
+                  <div class="h-6 w-6 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs font-bold">
+                    {{ doc.nom.charAt(0) }}
+                  </div>
+                  {{ doc.nom }}
+                </div>
+              </td>
+              <td class="px-5 py-3 text-gray-600 truncate max-w-[300px]">{{ doc.sujet }}</td>
+              <td class="px-5 py-3 text-right text-gray-500 text-xs">{{ doc.date }}</td>
+            </tr>
+            <tr *ngIf="mesDoctorants.length === 0">
+              <td colspan="3" class="px-5 py-6 text-center text-gray-400 text-xs italic">
+                Vous n'avez pas encore de doctorants admis.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,223 @@
+<div class="space-y-6 w-full px-6 pb-12 bg-gray-50 min-h-screen">
+  <!-- Header -->
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-gray-200 pb-4 pt-6">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Dashboard</h1>
+      <p class="text-gray-500 mt-1 text-sm">Vue d'ensemble et accès rapide</p>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="flex justify-center py-20">
+    <svg class="animate-spin h-8 w-8 text-esto-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+    </svg>
+  </div>
+
+  <div *ngIf="!isLoading && stats" class="space-y-6">
+    
+    <!-- KPI Cards (LuminoAdmin style) -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <!-- Utilisateurs -->
+      <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-5 flex items-center justify-between">
+        <div>
+          <p class="text-2xl font-bold text-gray-800">{{ stats.kpis?.utilisateurs || 0 }}</p>
+          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mt-1">Utilisateurs</p>
+        </div>
+        <div class="text-orange-400">
+          <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+        </div>
+      </div>
+      
+      <!-- Candidatures -->
+      <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-5 flex items-center justify-between">
+        <div>
+          <p class="text-2xl font-bold text-gray-800">{{ stats.kpis?.candidatures || 0 }}</p>
+          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mt-1">Candidatures</p>
+        </div>
+        <div class="text-yellow-400">
+          <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+        </div>
+      </div>
+
+      <!-- Sujets -->
+      <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-5 flex items-center justify-between">
+        <div>
+          <p class="text-2xl font-bold text-gray-800">{{ stats.kpis?.sujets || 0 }}</p>
+          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mt-1">Sujets</p>
+        </div>
+        <div class="text-emerald-400">
+          <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477-4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+        </div>
+      </div>
+
+      <!-- Laboratoires -->
+      <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-5 flex items-center justify-between">
+        <div>
+          <p class="text-2xl font-bold text-gray-800">{{ stats.kpis?.laboratoires || 0 }}</p>
+          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mt-1">Laboratoires</p>
+        </div>
+        <div class="text-rose-400">
+          <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions Rapides -->
+    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 flex flex-col mb-6">
+      <div class="px-6 py-4 border-b border-gray-100">
+        <h3 class="text-gray-800 font-bold">Actions Rapides</h3>
+      </div>
+      <div class="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1">
+        
+        <a routerLink="/admin/laboratoires" class="group flex items-center p-4 rounded-2xl bg-blue-50 border border-blue-100 hover:bg-blue-600 hover:text-white transition-all cursor-pointer">
+          <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center group-hover:bg-white/20 group-hover:text-white transition-colors mr-4 shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+          </div>
+          <div>
+            <h4 class="font-bold text-gray-900 group-hover:text-white">Laboratoires</h4>
+            <p class="text-xs text-gray-500 group-hover:text-blue-100 mt-0.5">Ajouter et configurer les labos</p>
+          </div>
+        </a>
+        
+        <a routerLink="/admin/directeurs" class="group flex items-center p-4 rounded-2xl bg-purple-50 border border-purple-100 hover:bg-purple-600 hover:text-white transition-all cursor-pointer">
+          <div class="w-12 h-12 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center group-hover:bg-white/20 group-hover:text-white transition-colors mr-4 shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
+          </div>
+          <div>
+            <h4 class="font-bold text-gray-900 group-hover:text-white">Directeurs</h4>
+            <p class="text-xs text-gray-500 group-hover:text-purple-100 mt-0.5">Affecter les chefs de labo</p>
+          </div>
+        </a>
+        
+        <a routerLink="/admin/doctorants" class="group flex items-center p-4 rounded-2xl bg-orange-50 border border-orange-100 hover:bg-orange-500 hover:text-white transition-all cursor-pointer">
+          <div class="w-12 h-12 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center group-hover:bg-white/20 group-hover:text-white transition-colors mr-4 shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path></svg>
+          </div>
+          <div>
+            <h4 class="font-bold text-gray-900 group-hover:text-white">Doctorants</h4>
+            <p class="text-xs text-gray-500 group-hover:text-orange-100 mt-0.5">Suivi des étudiants admis</p>
+          </div>
+        </a>
+        
+        <a routerLink="/admin/chatbot-logs" class="group flex items-center p-4 rounded-2xl bg-teal-50 border border-teal-100 hover:bg-teal-600 hover:text-white transition-all cursor-pointer">
+          <div class="w-12 h-12 rounded-full bg-teal-100 text-teal-600 flex items-center justify-center group-hover:bg-white/20 group-hover:text-white transition-colors mr-4 shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+          </div>
+          <div>
+            <h4 class="font-bold text-gray-900 group-hover:text-white">Logs IA Chatbot</h4>
+            <p class="text-xs text-gray-500 group-hover:text-teal-100 mt-0.5">Superviser l'IA de la plateforme</p>
+          </div>
+        </a>
+        
+      </div>
+    </div>
+
+    <!-- Main Layout Row -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      
+      <!-- Left Column (Stats & Top Profs) -->
+      <div class="space-y-6">
+        
+        <!-- Donut / Stats -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+          <div class="px-6 py-4 border-b border-gray-100">
+            <h3 class="text-gray-800 font-semibold">Statut des Candidatures</h3>
+          </div>
+          <div class="p-6 flex justify-around items-center">
+            <div class="text-center">
+              <div class="inline-flex items-center justify-center w-24 h-24 rounded-full border-4 border-yellow-400 text-2xl font-bold text-gray-700">
+                {{ stats.charts?.status?.['en_attente'] || 0 }}
+              </div>
+              <p class="text-sm text-gray-500 mt-3 font-medium">En attente</p>
+            </div>
+            <div class="text-center">
+              <div class="inline-flex items-center justify-center w-24 h-24 rounded-full border-4 border-emerald-400 text-2xl font-bold text-gray-700">
+                {{ stats.charts?.status?.['accepte'] || 0 }}
+              </div>
+              <p class="text-sm text-gray-500 mt-3 font-medium">Acceptés</p>
+            </div>
+            <div class="text-center">
+              <div class="inline-flex items-center justify-center w-24 h-24 rounded-full border-4 border-rose-400 text-2xl font-bold text-gray-700">
+                {{ stats.charts?.status?.['refuse'] || 0 }}
+              </div>
+              <p class="text-sm text-gray-500 mt-3 font-medium">Refusés</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Profs Row -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+          <div class="px-6 py-4 border-b border-gray-100">
+            <h3 class="text-gray-800 font-semibold">Professeurs les plus demandés (Top 5)</h3>
+          </div>
+          <div class="p-0 overflow-x-auto">
+            <table class="w-full text-sm text-left text-gray-500">
+              <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b border-gray-200">
+                <tr>
+                  <th scope="col" class="px-6 py-3">Professeur</th>
+                  <th scope="col" class="px-6 py-3 text-right">Demandes de thèse</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let prof of stats.tables?.top_professors" class="bg-white border-b hover:bg-gray-50">
+                  <td class="px-6 py-4 font-medium text-gray-900 flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs">
+                      {{ prof.nom.charAt(0) }}{{ prof.prenom.charAt(0) }}
+                    </div>
+                    {{ prof.nom }} {{ prof.prenom }}
+                  </td>
+                  <td class="px-6 py-4 text-right font-bold text-gray-700">
+                    {{ prof.requests }}
+                  </td>
+                </tr>
+                <tr *ngIf="!stats.tables?.top_professors?.length">
+                  <td colspan="2" class="px-6 py-8 text-center text-gray-400 italic">Aucune donnée disponible</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column (Timeline) -->
+      <div class="space-y-6 h-full">
+        
+        <!-- Timeline (Recent Activity) -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 h-full flex flex-col">
+          <div class="px-6 py-4 border-b border-gray-100">
+            <h3 class="text-gray-800 font-semibold">Activité Récente</h3>
+          </div>
+          <div class="p-6 max-h-[440px] overflow-y-auto flex-1">
+            <div class="relative border-l-2 border-gray-200 ml-3">
+              <div *ngFor="let activity of stats.tables?.recent_activity" class="mb-6 ml-6 relative group">
+                <!-- Dot -->
+                <span class="absolute -left-[35px] flex items-center justify-center w-6 h-6 bg-white border-2 border-esto-primary rounded-full ring-4 ring-white">
+                  <svg class="w-3 h-3 text-esto-primary" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                </span>
+                <div class="p-4 bg-gray-50 border border-gray-100 rounded-lg shadow-sm group-hover:bg-gray-100 transition-colors">
+                  <div class="flex justify-between items-start mb-1">
+                    <h4 class="text-sm font-semibold text-gray-900">Nouvelle Candidature</h4>
+                    <span class="text-xs text-gray-400 bg-white px-2 py-1 rounded border">{{ formatDate(activity.date) }}</span>
+                  </div>
+                  <p class="text-sm text-gray-600">Le candidat <span class="font-medium text-gray-800">{{ activity.candidat }}</span> a postulé pour le labo <span class="font-medium text-gray-800">{{ activity.labo }}</span>.</p>
+                  <span [class]="'mt-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ' + getStatusClass(activity.status)">
+                    {{ getStatusName(activity.status) }}
+                  </span>
+                </div>
+              </div>
+              
+              <div *ngIf="!stats.tables?.recent_activity?.length" class="text-sm text-gray-400 italic ml-6">
+                Aucune activité récente.
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>

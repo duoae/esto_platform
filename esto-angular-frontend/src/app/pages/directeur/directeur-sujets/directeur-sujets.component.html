@@ -1,0 +1,298 @@
+<div class="p-8 w-full">
+  <div *ngIf="successMessage" class="mb-6 p-4 bg-green-50 text-green-700 border border-green-200 rounded-xl flex items-center gap-3">
+    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+    {{ successMessage }}
+  </div>
+  <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div>
+      <h1 class="text-xl font-bold text-gray-900 tracking-tight">Sujets de Laboratoire</h1>
+      <p class="text-gray-500 text-xs mt-1">Consultez et gérez les sujets proposés par les professeurs.</p>
+    </div>
+    <!-- Search Bar -->
+    <div class="relative w-full max-w-md shrink-0">
+      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+      </div>
+      <input type="text" [(ngModel)]="searchTerm" placeholder="Rechercher par prof, titre ou date..." 
+             class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-white shadow-sm focus:ring-2 focus:ring-esto-primary focus:border-esto-primary outline-none transition-colors text-sm">
+    </div>
+  </div>
+
+  <!-- Status Filter Tabs -->
+  <div class="mb-6 flex flex-wrap gap-2">
+    <button (click)="statusFilter = 'all'" 
+            [ngClass]="statusFilter === 'all' ? 'bg-esto-primary text-white shadow-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
+            class="px-4 py-2 rounded-xl text-sm font-semibold transition-all">
+      Tous
+    </button>
+    <button (click)="statusFilter = 'en attente'" 
+            [ngClass]="statusFilter === 'en attente' ? 'bg-yellow-500 text-white shadow-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
+            class="px-4 py-2 rounded-xl text-sm font-semibold transition-all">
+      En attente
+    </button>
+    <button (click)="statusFilter = 'disponible'" 
+            [ngClass]="statusFilter === 'disponible' ? 'bg-green-500 text-white shadow-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
+            class="px-4 py-2 rounded-xl text-sm font-semibold transition-all">
+      Disponibles
+    </button>
+    <button (click)="statusFilter = 'indisponible'" 
+            [ngClass]="statusFilter === 'indisponible' ? 'bg-red-500 text-white shadow-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
+            class="px-4 py-2 rounded-xl text-sm font-semibold transition-all">
+      Indisponibles
+    </button>
+  </div>
+
+  <div *ngIf="errorMessage" class="mb-6 p-4 bg-red-50 text-red-700 border border-red-200 rounded-xl flex items-center gap-3">
+    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+    {{ errorMessage }}
+  </div>
+
+  <!-- Formulaire d'édition (visible seulement si editingSujet est défini) -->
+  <div *ngIf="editingSujet" class="bg-gray-50/50 p-6 rounded-3xl border border-gray-100 shadow-sm mb-8">
+    <div class="mb-6">
+      <h2 class="text-xl font-bold text-gray-800">Modifier et Valider le Sujet</h2>
+      <p class="text-gray-500 text-sm">Ajustez les détails du sujet proposé par {{ editingSujet.enseignant?.nom }} avant de le valider.</p>
+    </div>
+
+    <form [formGroup]="editForm" (ngSubmit)="sauvegarderEtValider()" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Titre du sujet</label>
+        <input type="text" formControlName="titre" class="w-full rounded border border-gray-200 px-4 py-2 text-sm focus:border-esto-primary focus:ring-esto-primary">
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Pôle thématique</label>
+          <input type="text" formControlName="pole_thematique" class="w-full rounded border border-gray-200 px-4 py-2 text-sm focus:border-esto-primary focus:ring-esto-primary">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Axe de recherche</label>
+          <input type="text" formControlName="axe_recherche" class="w-full rounded border border-gray-200 px-4 py-2 text-sm focus:border-esto-primary focus:ring-esto-primary">
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Objectif</label>
+        <textarea formControlName="objectif" rows="3" class="w-full rounded border border-gray-200 px-4 py-2 text-sm focus:border-esto-primary focus:ring-esto-primary"></textarea>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Retombées</label>
+        <textarea formControlName="retombees" rows="2" class="w-full rounded border border-gray-200 px-4 py-2 text-sm focus:border-esto-primary focus:ring-esto-primary"></textarea>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Conditions d'accueil</label>
+        <textarea formControlName="conditions_accueil" rows="2" class="w-full rounded border border-gray-200 px-4 py-2 text-sm focus:border-esto-primary focus:ring-esto-primary"></textarea>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Financement</label>
+          <input type="text" formControlName="financement" class="w-full rounded border border-gray-200 px-4 py-2 text-sm focus:border-esto-primary focus:ring-esto-primary">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Production scientifique</label>
+          <input type="text" formControlName="production_scientifique" class="w-full rounded border border-gray-200 px-4 py-2 text-sm focus:border-esto-primary focus:ring-esto-primary">
+        </div>
+      </div>
+      
+      <div class="flex items-center gap-3 pt-4">
+        <button type="submit" [disabled]="editForm.invalid || isSaving" class="px-6 py-2 rounded-lg text-sm font-bold text-white bg-esto-primary hover:bg-esto-primary/90 transition-colors flex items-center gap-2">
+          <svg *ngIf="isSaving" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+          Sauvegarder et Valider
+        </button>
+        <button type="button" (click)="annulerEdition()" class="px-6 py-2 rounded-lg text-sm font-medium text-gray-700 bg-gray-200 hover:bg-gray-300 transition-colors">
+          Annuler
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+    
+    <div *ngIf="isLoading" class="p-8 text-center text-gray-500">
+      <svg class="animate-spin h-8 w-8 mx-auto text-esto-primary" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+      <p class="mt-4">Chargement des sujets...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && filteredSujets.length === 0" class="bg-gray-50 p-6 rounded-lg border border-dashed border-gray-300 flex flex-col items-start text-left">
+      <h3 class="text-base font-bold text-gray-900 mb-1">Aucun sujet trouvé</h3>
+      <p class="text-gray-500 text-sm mb-0">Il n'y a pas encore de sujets correspondant à votre recherche.</p>
+    </div>
+
+    <!-- List / Table View -->
+    <div *ngIf="!isLoading && filteredSujets.length > 0" class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="bg-gray-50/50 border-b border-gray-100 text-gray-500 text-sm">
+            <th class="px-6 py-4 font-semibold w-[35%]">Sujet</th>
+            <th class="px-6 py-4 font-semibold w-[20%]">Pôle / Axe</th>
+            <th class="px-6 py-4 font-semibold w-[20%]">Proposé par</th>
+            <th class="px-6 py-4 font-semibold text-center w-[10%]">Statut</th>
+            <th class="px-6 py-4 font-semibold text-right w-[15%]">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          <tr *ngFor="let sujet of filteredSujets" (dblclick)="afficherDetails(sujet)" class="hover:bg-gray-50/50 transition-colors group cursor-pointer">
+            <td class="px-6 py-4">
+              <div class="font-bold text-gray-900 line-clamp-2">{{ sujet.title || sujet.titre }}</div>
+              <div class="text-xs text-gray-500 mt-1">Ajouté le: {{ sujet.created_at | date:'dd/MM/yyyy' || 'N/A' }}</div>
+            </td>
+            <td class="px-6 py-4">
+              <div class="text-sm font-medium text-gray-700 line-clamp-1" title="Pôle Thématique">
+                {{ sujet.pole || sujet.pole_thematique || 'Non défini' }}
+              </div>
+              <div class="text-xs text-gray-500 line-clamp-1 mt-0.5" title="Axe de Recherche">
+                {{ sujet.axe_recherche || 'Non défini' }}
+              </div>
+            </td>
+            <td class="px-6 py-4">
+              <div class="text-sm font-bold text-gray-900">
+                {{ sujet.proposer_name || (sujet.enseignant?.prenom + ' ' + sujet.enseignant?.nom) }}
+              </div>
+              <div class="text-xs text-gray-500 mt-0.5">{{ sujet.proposer_email || sujet.enseignant?.email }}</div>
+            </td>
+            <td class="px-6 py-4 text-center">
+              <span class="inline-flex px-3 py-1 rounded-full text-xs font-bold shadow-sm"
+                    [ngClass]="{
+                      'bg-green-100 text-green-700 border border-green-200': sujet.status === 'Disponible' || sujet.statut === 'disponible',
+                      'bg-yellow-100 text-yellow-800 border border-yellow-200': sujet.status === 'En attente' || sujet.statut === 'en attente',
+                      'bg-orange-100 text-orange-700 border border-orange-200': sujet.status === 'Attribué' || sujet.statut === 'attribue',
+                      'bg-red-100 text-red-700 border border-red-200': sujet.status === 'Indisponible' || sujet.statut === 'indisponible',
+                      'bg-gray-100 text-gray-700 border border-gray-200': sujet.status === 'Cloture' || sujet.statut === 'cloture',
+                      'bg-esto-primary/10 text-esto-primary border border-esto-primary/20': (!sujet.statut && !sujet.status)
+                    }">
+                {{ sujet.status || (sujet.statut | titlecase) || 'Disponible' }}
+              </span>
+            </td>
+            <td class="px-6 py-4 text-right">
+              <div class="flex items-center justify-end gap-2 transition-opacity" *ngIf="sujet.status === 'En attente' || sujet.statut === 'en attente' || sujet.status === 'Disponible' || sujet.statut === 'disponible' || (!sujet.statut && !sujet.status)">
+                
+                <button (click)="editerSujet(sujet)" class="p-1 text-green-500 hover:text-green-700 transition-colors" title="Examiner / Modifier">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                </button>
+                
+                <button *ngIf="sujet.status === 'En attente' || sujet.statut === 'en attente' || sujet.status === 'Disponible' || sujet.statut === 'disponible' || (!sujet.statut && !sujet.status)" (click)="refuserSujet(sujet)" class="p-1 text-red-500 hover:text-red-700 transition-colors" title="Refuser">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>
+                
+                <button *ngIf="sujet.status === 'En attente' || sujet.statut === 'en attente' || (!sujet.statut && !sujet.status)" (click)="validerSujet(sujet)" class="p-2 text-white bg-esto-primary hover:bg-esto-primary-dark rounded-lg transition-colors border border-esto-primary" title="Valider">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Confirmation -->
+<div *ngIf="showConfirmModal" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+  <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+    <div class="fixed inset-0 bg-gray-900 bg-opacity-40 backdrop-blur-sm transition-opacity" aria-hidden="true" (click)="closeConfirmModal()"></div>
+
+    <div class="relative inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md w-full">
+      <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <div class="sm:flex sm:items-start">
+          <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full sm:mx-0 sm:h-10 sm:w-10"
+               [ngClass]="confirmAction === 'refuser' ? 'bg-red-100' : 'bg-esto-primary/10'">
+            <svg *ngIf="confirmAction === 'refuser'" class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <svg *ngIf="confirmAction === 'valider'" class="h-6 w-6 text-esto-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+            <h3 class="text-lg leading-6 font-bold text-gray-900" id="modal-title">
+              Confirmation
+            </h3>
+            <div class="mt-2">
+              <p class="text-sm text-gray-500">
+                {{ confirmMessage }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+        <button type="button" (click)="confirmActionExecute()" class="w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm"
+                [ngClass]="confirmAction === 'refuser' ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500' : 'bg-esto-primary hover:bg-esto-primary-dark focus:ring-esto-primary'">
+          Confirmer
+        </button>
+        <button type="button" (click)="closeConfirmModal()" class="mt-3 w-full inline-flex justify-center rounded-xl border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-esto-primary sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+          Annuler
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Détails Sujet -->
+<div *ngIf="viewingSujet" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+  <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+    <div class="fixed inset-0 bg-gray-900 bg-opacity-40 backdrop-blur-sm transition-opacity" aria-hidden="true" (click)="closeDetails()"></div>
+    <div class="relative inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl w-full">
+      <div class="bg-white px-6 pt-5 pb-4 sm:p-6 sm:pb-4 max-h-[80vh] overflow-y-auto">
+        <div class="flex justify-between items-start mb-5">
+          <h3 class="text-xl leading-6 font-bold text-gray-900" id="modal-title">Détails du Sujet</h3>
+          <button (click)="closeDetails()" class="text-gray-400 hover:text-gray-500 transition-colors">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div class="space-y-4">
+          <div>
+            <span class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Titre</span>
+            <p class="text-sm text-gray-900 font-medium">{{ viewingSujet.title || viewingSujet.titre }}</p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <span class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Pôle Thématique</span>
+              <p class="text-sm text-gray-900">{{ viewingSujet.pole || viewingSujet.pole_thematique || 'Non défini' }}</p>
+            </div>
+            <div>
+              <span class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Axe de Recherche</span>
+              <p class="text-sm text-gray-900">{{ viewingSujet.axe || viewingSujet.axe_recherche || 'Non défini' }}</p>
+            </div>
+            <div>
+              <span class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Proposé par</span>
+              <p class="text-sm text-gray-900">{{ viewingSujet.proposer_name || (viewingSujet.enseignant?.prenom + ' ' + viewingSujet.enseignant?.nom) }}</p>
+            </div>
+            <div>
+              <span class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Date d'ajout</span>
+              <p class="text-sm text-gray-900">{{ viewingSujet.created_at | date:'dd/MM/yyyy' || 'N/A' }}</p>
+            </div>
+          </div>
+          <div *ngIf="viewingSujet.objective || viewingSujet.objectif">
+            <span class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Objectif</span>
+            <p class="text-sm text-gray-900 whitespace-pre-line">{{ viewingSujet.objective || viewingSujet.objectif }}</p>
+          </div>
+          <div *ngIf="viewingSujet.benefits || viewingSujet.retombees">
+            <span class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Retombées</span>
+            <p class="text-sm text-gray-900 whitespace-pre-line">{{ viewingSujet.benefits || viewingSujet.retombees }}</p>
+          </div>
+          <div *ngIf="viewingSujet.conditions || viewingSujet.conditions_accueil">
+            <span class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Conditions d'accueil</span>
+            <p class="text-sm text-gray-900 whitespace-pre-line">{{ viewingSujet.conditions || viewingSujet.conditions_accueil }}</p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div *ngIf="viewingSujet.funding || viewingSujet.financement">
+              <span class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Financement</span>
+              <p class="text-sm text-gray-900">{{ viewingSujet.funding || viewingSujet.financement }}</p>
+            </div>
+            <div *ngIf="viewingSujet.production || viewingSujet.production_scientifique">
+              <span class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Production Scientifique</span>
+              <p class="text-sm text-gray-900">{{ viewingSujet.production || viewingSujet.production_scientifique }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="bg-gray-50 px-4 py-3 sm:px-6 flex justify-end">
+        <button type="button" (click)="closeDetails()" class="inline-flex justify-center rounded-xl border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-esto-primary sm:text-sm transition-colors">
+          Fermer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

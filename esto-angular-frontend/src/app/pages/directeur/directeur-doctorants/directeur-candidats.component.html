@@ -1,0 +1,233 @@
+<div class="p-8 w-full">
+  <div class="mb-6 flex justify-between items-center">
+    <!-- Search Bar -->
+    <div class="relative w-full max-w-md">
+      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+        <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </div>
+      <input type="text"
+             (input)="filterCandidats($event)"
+             class="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-xl leading-5 bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-esto-primary/20 focus:border-esto-primary sm:text-sm transition-all shadow-sm"
+             placeholder="Rechercher par nom, CIN, sujet ou professeur...">
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="flex justify-center py-12">
+    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-esto-primary"></div>
+  </div>
+
+  <div *ngIf="!isLoading && filteredCandidats.length === 0" class="bg-white p-12 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center">
+    <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+      <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+      </svg>
+    </div>
+    <h3 class="text-lg font-bold text-gray-900">Aucun candidat trouvé</h3>
+    <p class="text-gray-500 text-sm mt-1">Il n'y a pas de candidatures correspondant à votre recherche.</p>
+  </div>
+
+  <!-- Table View -->
+  <div *ngIf="!isLoading && filteredCandidats.length > 0" class="bg-white rounded-[24px] border border-gray-100 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="bg-gray-50/50 border-b border-gray-100">
+            <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Candidat</th>
+            <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Sujet de thèse</th>
+            <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Professeur</th>
+            <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-center">Statut</th>
+            <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-50">
+          <tr *ngFor="let cand of filteredCandidats" class="hover:bg-gray-50 transition-colors cursor-pointer group" (click)="openCandidat(cand)">
+            <td class="px-6 py-4">
+              <div class="flex items-center">
+                <div class="h-10 w-10 flex-shrink-0">
+                  <div class="h-10 w-10 rounded-full bg-esto-primary text-white flex items-center justify-center font-bold text-sm shadow-sm">
+                    {{ (cand.nom || 'C').substring(0, 1).toUpperCase() }}{{ (cand.prenom || 'C').substring(0, 1).toUpperCase() }}
+                  </div>
+                </div>
+                <div class="ml-4">
+                  <div class="text-sm font-bold text-gray-900 group-hover:text-esto-primary transition-colors">
+                    {{ cand.nom?.toUpperCase() }} {{ cand.prenom }}
+                  </div>
+                  <div class="text-xs text-gray-500 mt-0.5">{{ cand.cin }}</div>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4">
+              <div class="text-sm text-gray-900 font-medium line-clamp-1 max-w-xs" [title]="cand.sujet_titre">
+                {{ cand.sujet_titre }}
+              </div>
+            </td>
+            <td class="px-6 py-4">
+              <div class="text-sm text-gray-700 font-medium">Pr. {{ cand.prof_nom }}</div>
+            </td>
+            <td class="px-6 py-4 text-center">
+              <span class="px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-full"
+                    [ngClass]="{
+                      'bg-yellow-100 text-yellow-800': cand.statut_choix === 'en_attente',
+                      'bg-blue-100 text-blue-800': cand.statut_choix === 'pre_selectionne',
+                      'bg-green-100 text-green-800': cand.statut_choix === 'accepte' || cand.statut_choix === 'admis',
+                      'bg-red-100 text-red-800': cand.statut_choix === 'refuse'
+                    }">
+                {{ formatStatus(cand.statut_choix) }}
+              </span>
+            </td>
+            <td class="px-6 py-4 text-right text-sm font-medium">
+              <button class="text-esto-primary hover:text-esto-primary-dark hover:underline font-bold transition-colors">
+                Détails
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for Candidat Details -->
+<div *ngIf="selectedCandidat" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+  <div class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm transition-opacity" (click)="closeModal()"></div>
+  
+  <div class="bg-white rounded-[24px] shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto relative z-10 transform transition-all">
+    <!-- Header -->
+    <div class="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between z-20">
+      <h3 class="text-xl font-black text-gray-900">Dossier de candidature</h3>
+      <button (click)="closeModal()" class="text-gray-400 hover:text-gray-600 transition-colors p-2 rounded-full hover:bg-gray-100">
+        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-6 space-y-8">
+      
+      <!-- Profile Section -->
+      <div class="flex flex-col sm:flex-row gap-6 items-start">
+        <div class="w-20 h-20 rounded-3xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-3xl shrink-0 border-2 border-white shadow-sm">
+          {{ (selectedCandidat.nom || 'C').substring(0, 1).toUpperCase() }}{{ (selectedCandidat.prenom || 'C').substring(0, 1).toUpperCase() }}
+        </div>
+        <div>
+          <h2 class="text-2xl font-black text-gray-900">{{ selectedCandidat.nom?.toUpperCase() }} {{ selectedCandidat.prenom }}</h2>
+          <div class="flex flex-wrap gap-4 mt-2 text-sm text-gray-600">
+            <span class="flex items-center"><svg class="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"></path></svg> CIN: {{ selectedCandidat.cin }}</span>
+            <span class="flex items-center"><svg class="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg> {{ selectedCandidat.email }}</span>
+            <span class="flex items-center"><svg class="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg> {{ selectedCandidat.telephone || 'Non renseigné' }}</span>
+          </div>
+          <div class="mt-3">
+            <span class="px-3 py-1 bg-purple-50 text-purple-700 text-xs font-bold rounded-lg border border-purple-100">{{ selectedCandidat.diplome_obtenu || 'Bac+5' }}</span>
+            <span class="px-3 py-1 ml-2 inline-flex text-xs leading-5 font-bold rounded-lg border"
+                  [ngClass]="{
+                    'bg-yellow-50 text-yellow-700 border-yellow-100': selectedCandidat.statut_choix === 'en_attente',
+                    'bg-blue-50 text-blue-700 border-blue-100': selectedCandidat.statut_choix === 'pre_selectionne',
+                    'bg-green-50 text-green-700 border-green-100': selectedCandidat.statut_choix === 'accepte' || selectedCandidat.statut_choix === 'admis',
+                    'bg-red-50 text-red-700 border-red-100': selectedCandidat.statut_choix === 'refuse'
+                  }">
+              {{ formatStatus(selectedCandidat.statut_choix) }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <hr class="border-gray-100">
+
+      <!-- Subject Details -->
+      <div>
+        <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Détails du Sujet</h4>
+        <div class="bg-gray-50 rounded-xl p-5 border border-gray-100">
+          <p class="font-bold text-gray-900 mb-2">{{ selectedCandidat.sujet_titre }}</p>
+          <div class="flex items-center text-sm text-gray-600">
+            <span class="font-medium mr-2">Proposé par:</span> 
+            <div class="flex items-center bg-white px-2.5 py-1 rounded-md border border-gray-200">
+              <div class="w-5 h-5 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center font-bold text-[10px] mr-2">
+                {{ (selectedCandidat.prof_nom || 'P').substring(0, 1).toUpperCase() }}
+              </div>
+              <span class="font-bold">Pr. {{ selectedCandidat.prof_nom }} {{ selectedCandidat.prof_prenom }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Documents Section -->
+      <div>
+        <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Dossier Scientifique (Pièces jointes)</h4>
+        <div class="flex flex-col gap-3">
+          <a *ngIf="selectedCandidat.path_cv" [href]="getDocUrl(selectedCandidat.path_cv)" target="_blank" class="flex items-center justify-between p-4 bg-white rounded-2xl shadow-sm border border-gray-100 hover:border-blue-300 hover:shadow-md transition-all group">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+              </div>
+              <div class="flex flex-col">
+                <span class="text-sm font-bold text-gray-800">CV</span>
+                <span class="text-[10px] text-gray-400">Document PDF</span>
+              </div>
+            </div>
+            <span class="text-xs font-bold text-blue-500 bg-blue-50 px-3 py-1.5 rounded-lg group-hover:bg-blue-500 group-hover:text-white transition-colors">Ouvrir</span>
+          </a>
+          
+          <a *ngIf="selectedCandidat.path_bac" [href]="getDocUrl(selectedCandidat.path_bac)" target="_blank" class="flex items-center justify-between p-4 bg-white rounded-2xl shadow-sm border border-gray-100 hover:border-orange-300 hover:shadow-md transition-all group">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-orange-50 text-orange-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+              </div>
+              <div class="flex flex-col">
+                <span class="text-sm font-bold text-gray-800">BAC</span>
+                <span class="text-[10px] text-gray-400">Document PDF</span>
+              </div>
+            </div>
+            <span class="text-xs font-bold text-orange-500 bg-orange-50 px-3 py-1.5 rounded-lg group-hover:bg-orange-500 group-hover:text-white transition-colors">Ouvrir</span>
+          </a>
+
+          <a *ngIf="selectedCandidat.path_bac2" [href]="getDocUrl(selectedCandidat.path_bac2)" target="_blank" class="flex items-center justify-between p-4 bg-white rounded-2xl shadow-sm border border-gray-100 hover:border-purple-300 hover:shadow-md transition-all group">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-purple-50 text-purple-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+              </div>
+              <div class="flex flex-col">
+                <span class="text-sm font-bold text-gray-800">BAC+2</span>
+                <span class="text-[10px] text-gray-400">Document PDF</span>
+              </div>
+            </div>
+            <span class="text-xs font-bold text-purple-500 bg-purple-50 px-3 py-1.5 rounded-lg group-hover:bg-purple-500 group-hover:text-white transition-colors">Ouvrir</span>
+          </a>
+
+          <a *ngIf="selectedCandidat.path_licence" [href]="getDocUrl(selectedCandidat.path_licence)" target="_blank" class="flex items-center justify-between p-4 bg-white rounded-2xl shadow-sm border border-gray-100 hover:border-yellow-300 hover:shadow-md transition-all group">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-yellow-50 text-yellow-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+              </div>
+              <div class="flex flex-col">
+                <span class="text-sm font-bold text-gray-800">Licence</span>
+                <span class="text-[10px] text-gray-400">Document PDF</span>
+              </div>
+            </div>
+            <span class="text-xs font-bold text-yellow-500 bg-yellow-50 px-3 py-1.5 rounded-lg group-hover:bg-yellow-500 group-hover:text-white transition-colors">Ouvrir</span>
+          </a>
+
+          <a *ngIf="selectedCandidat.path_master" [href]="getDocUrl(selectedCandidat.path_master)" target="_blank" class="flex items-center justify-between p-4 bg-white rounded-2xl shadow-sm border border-gray-100 hover:border-green-300 hover:shadow-md transition-all group">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-green-50 text-green-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+              </div>
+              <div class="flex flex-col">
+                <span class="text-sm font-bold text-gray-800">Master / Ing.</span>
+                <span class="text-[10px] text-gray-400">Document PDF</span>
+              </div>
+            </div>
+            <span class="text-xs font-bold text-green-500 bg-green-50 px-3 py-1.5 rounded-lg group-hover:bg-green-500 group-hover:text-white transition-colors">Ouvrir</span>
+          </a>
+          
+          <div *ngIf="!selectedCandidat.path_cv && !selectedCandidat.path_bac && !selectedCandidat.path_bac2 && !selectedCandidat.path_licence && !selectedCandidat.path_master" class="text-center py-6 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+            <p class="text-sm text-gray-500 font-medium">Aucun document joint par le candidat.</p>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>
