@@ -80,9 +80,10 @@ class ActiviteController extends Controller
 
         // Calcul des points basé sur le barème
         $points = 0;
-        if ($request->type === 'Article Scopus') $points = 1.0;
-        elseif ($request->type === 'Conference') $points = 0.5;
-        elseif ($request->type === 'Poster') $points = 0.5;
+        if ($request->type === 'Article Journal') $points = 1.0;
+        elseif ($request->type === 'Conference Paper') $points = 0.5;
+        elseif ($request->type === 'Communication Orale') $points = 0.5;
+        elseif ($request->type === 'Poster') $points = 0.25;
         // else Formation -> 0 points (only hours matter)
 
         $activite = ActiviteDoctorat::create([

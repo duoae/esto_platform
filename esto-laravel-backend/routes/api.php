@@ -87,6 +87,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/admin/chatbot-logs', [\App\Http\Controllers\Admin\ChatbotLogController::class, 'index']);
     // Directeur Candidates
     Route::get('/directeur/candidats', [\App\Http\Controllers\Directeur\DirecteurCandidatController::class, 'index']);
+    Route::put('/directeur/candidats/choix/{choix_id}/status', [\App\Http\Controllers\Directeur\DirecteurCandidatController::class, 'updateStatus']);
 
     // Lab extra CRUD
     Route::post('/labs', [LabController::class, 'store']);
@@ -136,6 +137,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/profil', [ProfileController::class, 'update']);
     Route::put('/profil/password', [ProfileController::class, 'updatePassword']);
     Route::post('/profil/photo', [ProfileController::class, 'uploadPhoto']);
+    Route::delete('/profil/photo', [ProfileController::class, 'deletePhoto']);
 
     // Candidatures
     Route::get('/candidatures', [CandidatureController::class, 'index']);

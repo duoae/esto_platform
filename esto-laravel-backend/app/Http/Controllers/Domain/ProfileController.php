@@ -168,4 +168,32 @@ class ProfileController extends Controller
 
         return $this->errorResponse('Aucun fichier fourni', 400);
     }
+
+    /**
+     * @OA\Delete(
+     *     path="/api/profil/photo",
+     *     summary="Supprimer la photo de profil",
+     *     tags={"Profil"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(response=200, description="Photo de profil supprimée")
+     * )
+     */
+    public function deletePhoto(Request $request)
+    {
+        $user = $request->user();
+
+        if ($user->photo_profil) {
+            if (\Illuminate\Support\Facades\Storage::disk('public')->exists($user->photo_profil)) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($user->photo_profil);
+            }
+            
+            $user->update([
+                'photo_profil' => null
+            ]);
+
+            return $this->successResponse(null, 'Photo de profil supprimée avec succès');
+        }
+
+        return $this->errorResponse('Aucune photo de profil à supprimer', 404);
+    }
 }

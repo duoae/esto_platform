@@ -42,13 +42,19 @@ import { FormsModule } from '@angular/forms';
             </div>
             <div>
               <h3 class="font-bold text-gray-900">Photo de profil</h3>
-              <p class="text-xs text-gray-500 mt-1">Cliquez sur l'image pour la modifier (JPG, PNG).</p>
+              <p class="text-xs text-gray-500 mt-1 mb-3">Cliquez sur l'image pour la modifier (JPG, PNG).</p>
+              
+              <button *ngIf="profileData.user?.photo_profil" (click)="deletePhoto()" class="text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg transition-colors inline-flex items-center">
+                <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                Supprimer
+              </button>
+
               <div *ngIf="isUploadingPhoto" class="text-xs text-blue-600 font-bold mt-2 flex items-center gap-1">
                 <svg class="animate-spin h-3 w-3" fill="none" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                Téléchargement...
+                Chargement...
               </div>
             </div>
           </div>
@@ -274,19 +280,45 @@ export class CandidatProfileComponent implements OnInit {
       headers: { Authorization: `Bearer ${localStorage.getItem('esto_token')}` }
     }).subscribe({
       next: (res) => {
-        this.profileData.user.photo_profil = res.photo_url;
+        const newUrl = res.photo_url || res.data?.photo_profil || res.photo_profil;
+        this.profileData.user.photo_profil = newUrl;
         this.isUploadingPhoto = false;
         // Mettre a jour le local storage
         const userStr = localStorage.getItem('esto_user');
         if (userStr) {
           const user = JSON.parse(userStr);
-          user.photo_profil = res.photo_url;
+          user.photo_profil = newUrl;
           localStorage.setItem('esto_user', JSON.stringify(user));
         }
       },
       error: (err) => {
         console.error('Erreur upload photo:', err);
         alert(err.error?.message || "Erreur lors du téléchargement de la photo.");
+        this.isUploadingPhoto = false;
+      }
+    });
+  }
+
+  deletePhoto() {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer votre photo de profil ?')) return;
+
+    this.isUploadingPhoto = true;
+    this.http.delete<any>(`${this.apiUrl}/profil/photo`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('esto_token')}` }
+    }).subscribe({
+      next: () => {
+        this.profileData.user.photo_profil = null;
+        this.isUploadingPhoto = false;
+        const userStr = localStorage.getItem('esto_user');
+        if (userStr) {
+          const user = JSON.parse(userStr);
+          user.photo_profil = null;
+          localStorage.setItem('esto_user', JSON.stringify(user));
+        }
+      },
+      error: (err) => {
+        console.error('Erreur suppression photo:', err);
+        alert(err.error?.message || "Erreur lors de la suppression de la photo.");
         this.isUploadingPhoto = false;
       }
     });

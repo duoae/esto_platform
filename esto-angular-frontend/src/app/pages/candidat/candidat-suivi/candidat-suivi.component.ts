@@ -119,7 +119,7 @@ import { FormsModule } from '@angular/forms';
               <tr *ngFor="let act of activites" class="hover:bg-gray-50/50 transition-colors group">
                 <td class="px-6 py-4 align-middle">
                   <div class="font-bold text-gray-900 text-sm mb-1 line-clamp-1" [title]="act.titre">{{ act.titre }}</div>
-                  <div class="text-[10px] text-gray-500 font-bold bg-gray-100/80 inline-block px-2 py-0.5 rounded tracking-wide">{{ act.type }}</div>
+                  <div class="text-[10px] text-gray-500 font-bold bg-gray-100/80 inline-block px-2 py-0.5 rounded tracking-wide">{{ formatType(act.type) }}</div>
                 </td>
                 <td class="px-6 py-4 align-middle">
                   <div *ngIf="act.heures > 0" class="font-bold text-blue-600 text-sm bg-blue-50 inline-block px-2 py-0.5 rounded">{{ act.heures }}h</div>
@@ -181,9 +181,10 @@ import { FormsModule } from '@angular/forms';
                   <select [(ngModel)]="newActivite.type" name="type" required class="w-full appearance-none rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 outline-none transition-all focus:border-esto-primary focus:ring-2 focus:ring-esto-primary/20">
                     <option value="" disabled selected>Sélectionner un type...</option>
                     <option value="Formation">Formation (Heures)</option>
-                    <option value="Article Scopus">Article Scopus (+1.0 pt)</option>
-                    <option value="Conference">Conférence (+0.5 pt)</option>
-                    <option value="Poster">Poster (+0.5 pt)</option>
+                    <option value="Article Journal">Article Journal (+1.0 pt)</option>
+                    <option value="Conference Paper">Conference Paper (+0.5 pt)</option>
+                    <option value="Communication Orale">Communication Orale (+0.5 pt)</option>
+                    <option value="Poster">Poster (+0.25 pt)</option>
                   </select>
                   <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -408,6 +409,13 @@ export class CandidatSuiviComponent implements OnInit {
         this.isSubmitting = false;
       }
     });
+  }
+
+  // Convert old db values to new format
+  formatType(type: string): string {
+    if (type === 'Document de conférence') return 'Conference Paper';
+    if (type === 'Affiche') return 'Poster';
+    return type;
   }
 
   getDocUrl(path: string): string {

@@ -36,7 +36,7 @@
             <th class="px-8 py-5 text-[10px] font-bold text-gray-500 uppercase tracking-widest w-1/4">Sujet de thèse</th>
             <th class="px-8 py-5 text-[10px] font-bold text-gray-500 uppercase tracking-widest w-1/5">Professeur</th>
             <th class="px-8 py-5 text-[10px] font-bold text-gray-500 uppercase tracking-widest w-1/6">Statut</th>
-            <th class="px-8 py-5 text-[10px] font-bold text-gray-500 uppercase tracking-widest text-right">Actions</th>
+            <th class="px-8 py-5 text-[10px] font-bold text-gray-500 uppercase tracking-widest text-right">Décision</th>
           </tr>
         </thead>
         <tbody>
@@ -66,9 +66,29 @@
               </span>
             </td>
             <td class="px-8 py-5 text-right">
-              <button (click)="openCandidat(cand)" class="text-[13px] text-esto-primary hover:text-esto-primary-dark font-bold transition-colors">
-                Détails
-              </button>
+              <div class="flex items-center justify-end gap-2">
+                <!-- Show Admis/Refuse buttons only if accepte -->
+                <ng-container *ngIf="cand.statut_choix === 'accepte'">
+                  <button (click)="updateStatus(cand, 'admis')" class="px-3 py-1.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition-colors">
+                    Admettre
+                  </button>
+                  <button (click)="updateStatus(cand, 'refuse')" class="px-3 py-1.5 text-xs font-bold text-white bg-red-500 hover:bg-red-600 rounded-lg transition-colors">
+                    Refuser
+                  </button>
+                </ng-container>
+                <!-- If admis show locked badge -->
+                <span *ngIf="cand.statut_choix === 'admis'" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                  Admis
+                </span>
+                <!-- If refused show badge -->
+                <span *ngIf="cand.statut_choix === 'refuse'" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold bg-red-50 text-red-700 border border-red-200">
+                  Refusé
+                </span>
+                <button (click)="openCandidat(cand)" class="text-[13px] text-esto-primary hover:text-esto-primary-dark font-bold transition-colors ml-1">
+                  Détails
+                </button>
+              </div>
             </td>
           </tr>
         </tbody>

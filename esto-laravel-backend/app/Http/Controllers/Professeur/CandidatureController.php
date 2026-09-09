@@ -47,10 +47,9 @@ class CandidatureController extends Controller
     public function updateStatus(Request $request, $choix_id)
     {
         $request->validate([
-            'statut_choix' => 'required|in:en_attente,pre_selectionne,accepte,refuse,admis'
+            'statut_choix' => 'required|in:en_attente,pre_selectionne,accepte,refuse'
         ]);
 
-        // Vérifier que le choix appartient bien à un sujet du professeur
         $userId = Auth::id();
         $choix = DB::table('candidature_choix')
             ->join('sujets_these', 'candidature_choix.sujet_id', '=', 'sujets_these.id')
@@ -60,6 +59,12 @@ class CandidatureController extends Controller
 
         if (!$choix) {
             return response()->json(['success' => false, 'message' => 'Non autorisé.'], 403);
+        }
+
+        // Block modification if already admis (only directeur/admin can set admis)
+        $currentStatus = DB::table('candidature_choix')->where('id', $choix_id)->value('statut_choix');
+        if ($currentStatus === 'admis') {
+            return response()->json(['success' => false, 'message' => 'Ce candidat est déjà admis. Seul le directeur peut modifier ce statut.'], 403);
         }
 
         $updateData = [

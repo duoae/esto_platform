@@ -200,4 +200,30 @@ export class ProfesseurProfileComponent implements OnInit {
       }
     });
   }
+
+  deletePhoto() {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer votre photo de profil ?')) return;
+
+    this.isUploading = true;
+    this.http.delete<any>(`${this.apiUrl}/profil/photo`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('esto_token')}` }
+    }).subscribe({
+      next: () => {
+        this.profileData.photo_profil = null;
+        this.isUploading = false;
+        const userStr = localStorage.getItem('esto_user');
+        if (userStr) {
+          const user = JSON.parse(userStr);
+          user.photo_profil = null;
+          localStorage.setItem('esto_user', JSON.stringify(user));
+          window.dispatchEvent(new Event('profileUpdated'));
+        }
+        this.successMessage = 'Photo de profil supprimée avec succès.';
+      },
+      error: (err) => {
+        this.errorMessage = err.error?.message || 'Erreur lors de la suppression de la photo.';
+        this.isUploading = false;
+      }
+    });
+  }
 }

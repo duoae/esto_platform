@@ -402,7 +402,7 @@ import { FormsModule } from '@angular/forms';
                   <tr *ngFor="let act of activites">
                     <td class="px-6 py-4 align-top">
                       <div class="font-bold text-gray-900 text-base mb-1">{{ act.titre }}</div>
-                      <div class="text-xs text-gray-500 mb-3">{{ act.type }}</div>
+                      <div class="text-xs text-gray-500 mb-3">{{ formatType(act.type) }}</div>
                       <div class="flex flex-wrap items-center gap-2">
                         <a *ngIf="act.pdf_path" [href]="getDocUrl(act.pdf_path)" target="_blank" class="text-esto-primary bg-esto-primary/10 hover:bg-esto-primary/20 px-3 py-1.5 rounded-lg text-xs flex items-center font-bold transition-colors">
                           <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
@@ -591,6 +591,13 @@ export class ProfesseurDoctorantsComponent implements OnInit {
       }
     });
   }
+
+  formatType(type: string): string {
+    if (type === 'Document de conférence') return 'Conference Paper';
+    if (type === 'Affiche') return 'Poster';
+    return type;
+  }
+
 
   getHeuresProgress(): number {
     if (!this.suiviStats) return 0;

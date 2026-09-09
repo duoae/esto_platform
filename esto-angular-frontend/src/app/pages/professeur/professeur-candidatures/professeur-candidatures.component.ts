@@ -95,19 +95,28 @@ import { FormsModule } from '@angular/forms';
                 </td>
                 <td class="px-6 py-4 text-right">
                   <div class="flex justify-end">
-                    <select [(ngModel)]="cand.statut_choix" (ngModelChange)="onStatusChange(cand, $event)" class="text-xs font-bold rounded-lg shadow-sm py-2 pl-3 pr-8 w-36 outline-none transition-all cursor-pointer border"
-                            [ngClass]="{
-                              'bg-yellow-50 text-yellow-700 border-yellow-200 hover:bg-yellow-100': cand.statut_choix === 'en_attente',
-                              'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100': cand.statut_choix === 'pre_selectionne',
-                              'bg-green-50 text-green-700 border-green-200 hover:bg-green-100': cand.statut_choix === 'accepte' || cand.statut_choix === 'admis',
-                              'bg-red-50 text-red-700 border-red-200 hover:bg-red-100': cand.statut_choix === 'refuse'
-                            }">
-                      <option value="en_attente">En attente</option>
-                      <option value="pre_selectionne">Pré-sélectionné</option>
-                      <option value="accepte">Accepté</option>
-                      <option value="admis">Admis</option>
-                      <option value="refuse">Refusé</option>
-                    </select>
+                    <!-- If already admis, show locked badge -->
+                    <ng-container *ngIf="cand.statut_choix === 'admis'">
+                      <span class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold bg-green-100 text-green-700 border border-green-200">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                        Admis
+                      </span>
+                    </ng-container>
+                    <!-- Otherwise show editable dropdown (without admis) -->
+                    <ng-container *ngIf="cand.statut_choix !== 'admis'">
+                      <select [(ngModel)]="cand.statut_choix" (ngModelChange)="onStatusChange(cand, $event)" class="text-xs font-bold rounded-lg shadow-sm py-2 pl-3 pr-8 w-36 outline-none transition-all cursor-pointer border"
+                              [ngClass]="{
+                                'bg-yellow-50 text-yellow-700 border-yellow-200 hover:bg-yellow-100': cand.statut_choix === 'en_attente',
+                                'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100': cand.statut_choix === 'pre_selectionne',
+                                'bg-green-50 text-green-700 border-green-200 hover:bg-green-100': cand.statut_choix === 'accepte',
+                                'bg-red-50 text-red-700 border-red-200 hover:bg-red-100': cand.statut_choix === 'refuse'
+                              }">
+                        <option value="en_attente">En attente</option>
+                        <option value="pre_selectionne">Pré-sélectionné</option>
+                        <option value="accepte">Accepté</option>
+                        <option value="refuse">Refusé</option>
+                      </select>
+                    </ng-container>
                   </div>
                 </td>
               </tr>

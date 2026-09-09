@@ -72,6 +72,26 @@ export class DirecteurCandidatsComponent implements OnInit {
     return `${this.storageUrl}/${path}`;
   }
 
+  updateStatus(cand: any, newStatus: string) {
+    const label = newStatus === 'admis' ? 'admettre' : 'refuser';
+    if (!confirm(`Voulez-vous vraiment ${label} ce candidat ?`)) return;
+
+    this.http.put<any>(`${this.apiUrl}/directeur/candidats/choix/${cand.choix_id}/status`,
+      { statut_choix: newStatus },
+      { headers: { Authorization: `Bearer ${localStorage.getItem('esto_token')}` } }
+    ).subscribe({
+      next: () => {
+        cand.statut_choix = newStatus;
+        // Update in main list too
+        const item = this.candidats.find(c => c.choix_id === cand.choix_id);
+        if (item) item.statut_choix = newStatus;
+      },
+      error: (err) => {
+        alert(err.error?.message || 'Erreur lors de la mise à jour.');
+      }
+    });
+  }
+
   getDocuments(cand: any): { key: string, label: string, path: string }[] {
     if (!cand) return [];
     const docs = [];
